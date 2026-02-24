@@ -1,0 +1,13 @@
+// Contador em Verbo
+// Demonstra variáveis mutáveis, loops e reatribuição.
+
+A titulo é "Contagem Regressiva".
+Exibir com (titulo).
+
+Um contador está 10.
+
+Repita 10 vezes:
+    Exibir com (contador).
+    contador está contador - 1.
+
+Exibir com ("Lançamento!").

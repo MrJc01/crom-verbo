@@ -1,0 +1,16 @@
+// Fibonacci em Verbo
+// Calcula os N primeiros números da sequência de Fibonacci.
+
+Um primeiro está 0.
+Um segundo está 1.
+Um temp está 0.
+
+Exibir com ("Sequência de Fibonacci:").
+Exibir com (primeiro).
+Exibir com (segundo).
+
+Repita 8 vezes:
+    temp está primeiro + segundo.
+    primeiro está segundo.
+    segundo está temp.
+    Exibir com (segundo).

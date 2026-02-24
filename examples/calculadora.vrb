@@ -1,0 +1,23 @@
+// Calculadora em Verbo
+// Demonstra funções, parâmetros e retorno.
+
+Para Somar usando (x: Inteiro, y: Inteiro):
+    Retorne x + y.
+
+Para Subtrair usando (x: Inteiro, y: Inteiro):
+    Retorne x - y.
+
+Para Multiplicar usando (x: Inteiro, y: Inteiro):
+    Retorne x * y.
+
+A titulo é "Calculadora Verbo".
+Exibir com (titulo).
+
+Um resultado_soma é Somar com (10, 5).
+Exibir com (resultado_soma).
+
+Um resultado_sub é Subtrair com (10, 3).
+Exibir com (resultado_sub).
+
+Um resultado_mult é Multiplicar com (4, 7).
+Exibir com (resultado_mult).
