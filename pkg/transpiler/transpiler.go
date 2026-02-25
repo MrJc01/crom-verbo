@@ -561,20 +561,24 @@ func (t *Transpiler) transpilarExpressao(expr ast.Expressao) string {
 
 func (t *Transpiler) converterOperador(op string) string {
 	switch op {
-	case "+", "e":
+	case "+", "e", "soma", "mais":
 		return "+"
-	case "-", "menos":
+	case "-", "menos", "subtrai":
 		return "-"
-	case "*":
+	case "*", "multiplica":
 		return "*"
-	case "/":
+	case "/", "divide":
 		return "/"
+	case "%", "módulo", "modulo", "porcentagem", "resto":
+		return "%"
 	case "menor que":
 		return "<"
 	case "maior que":
 		return ">"
-	case "igual":
+	case "igual", "idêntico", "identico":
 		return "=="
+	case "diferente":
+		return "!="
 	default:
 		return op
 	}

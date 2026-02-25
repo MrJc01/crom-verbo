@@ -159,47 +159,33 @@ Exibir com (site).`
 Exibir com ("Iniciando FizzBuzz...").
 Um numero está 0.
 
-Repita 20 vezes:
+Repita 20 vezes: {
     numero está numero + 1.
-
-    // Calculando os restos por aritmética de inteiros
-    Um divQuinze está numero / 15.
-    Um multQuinze está divQuinze * 15.
-    Um restoQuinze está numero - multQuinze.
-
-    Um divTres está numero / 3.
-    Um multTres está divTres * 3.
-    Um restoTres está numero - multTres.
-
-    Um divCinco está numero / 5.
-    Um multCinco está divCinco * 5.
-    Um restoCinco está numero - multCinco.
-
     Um flag está 0.
 
-    Se restoQuinze == 0, então:
+    Se numero % 15 == 0, então: {
         Exibir com ("FizzBuzz").
         flag está 1.
-    .
+    }
 
-    Se restoTres == 0, então:
-        Se flag == 0, então:
+    Se numero % 3 == 0, então: {
+        Se flag == 0, então: {
             Exibir com ("Fizz").
             flag está 1.
-        .
-    .
+        }
+    }
 
-    Se restoCinco == 0, então:
-        Se flag == 0, então:
+    Se numero % 5 == 0, então: {
+        Se flag == 0, então: {
             Exibir com ("Buzz").
             flag está 1.
-        .
-    .
+        }
+    }
 
-    Se flag == 0, então:
+    Se flag == 0, então: {
         Exibir com (numero).
-    .
-.
+    }
+}
 
 Exibir com ("Concluído!").`
     },

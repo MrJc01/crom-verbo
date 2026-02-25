@@ -175,6 +175,20 @@ func (l *Lexer) proximoToken() (Token, error) {
 		l.lerCaractere()
 		return Token{Tipo: TOKEN_ATRIBUIR, Valor: "=", Linha: linha, Coluna: coluna}, nil
 
+	case l.caractere == '!':
+		if l.espiarProximo() == '=' {
+			l.lerCaractere() // consumir '!'
+			l.lerCaractere() // consumir '='
+			return Token{Tipo: TOKEN_DIFERENTE, Valor: "!=", Linha: linha, Coluna: coluna}, nil
+		}
+		ch := l.caractere
+		l.lerCaractere()
+		return Token{}, fmt.Errorf("linha %d, coluna %d: caractere inesperado '%c'", linha, coluna, ch)
+
+	case l.caractere == '%':
+		l.lerCaractere()
+		return Token{Tipo: TOKEN_MODULO, Valor: "%", Linha: linha, Coluna: coluna}, nil
+
 	case l.caractere == '.':
 		l.lerCaractere()
 		return Token{Tipo: TOKEN_PONTO, Valor: ".", Linha: linha, Coluna: coluna}, nil
@@ -202,6 +216,14 @@ func (l *Lexer) proximoToken() (Token, error) {
 	case l.caractere == ']':
 		l.lerCaractere()
 		return Token{Tipo: TOKEN_COLCHETE_FECHA, Valor: "]", Linha: linha, Coluna: coluna}, nil
+
+	case l.caractere == '{':
+		l.lerCaractere()
+		return Token{Tipo: TOKEN_CHAVE_ABRE, Valor: "{", Linha: linha, Coluna: coluna}, nil
+
+	case l.caractere == '}':
+		l.lerCaractere()
+		return Token{Tipo: TOKEN_CHAVE_FECHA, Valor: "}", Linha: linha, Coluna: coluna}, nil
 
 	default:
 		ch := l.caractere

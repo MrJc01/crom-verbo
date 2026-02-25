@@ -79,11 +79,13 @@ const (
 	TOKEN_SINALIZE           // Sinalize (panic)
 
 	// Operadores
-	TOKEN_MAIS               // +
-	TOKEN_MENOS              // -
-	TOKEN_MULTIPLICAR        // * ou "vezes" contextual
-	TOKEN_DIVIDIR            // /
+	TOKEN_MAIS               // + / soma / mais
+	TOKEN_MENOS              // - / subtrai / menos
+	TOKEN_MULTIPLICAR        // * / multiplica
+	TOKEN_DIVIDIR            // / / divide
+	TOKEN_MODULO             // % / porcentagem / resto / módulo
 	TOKEN_ATRIBUIR           // = (usado internamente)
+	TOKEN_DIFERENTE          // != / diferente
 
 	// Delimitadores
 	TOKEN_PONTO              // . (fim de instrução)
@@ -93,6 +95,8 @@ const (
 	TOKEN_PARENTESE_FECHA    // )
 	TOKEN_COLCHETE_ABRE      // [
 	TOKEN_COLCHETE_FECHA     // ]
+	TOKEN_CHAVE_ABRE         // { (início de bloco alternativo)
+	TOKEN_CHAVE_FECHA        // } (fim de bloco alternativo)
 
 	// Tipos
 	TOKEN_TIPO               // Texto, Inteiro, Decimal, Logico, Lista
@@ -168,7 +172,9 @@ func (tt TokenType) NomeLegivel() string {
 		TOKEN_MENOS:            "MENOS",
 		TOKEN_MULTIPLICAR:      "MULTIPLICAR",
 		TOKEN_DIVIDIR:          "DIVIDIR",
+		TOKEN_MODULO:           "MÓDULO",
 		TOKEN_ATRIBUIR:         "ATRIBUIR",
+		TOKEN_DIFERENTE:        "DIFERENTE",
 		TOKEN_PONTO:            "PONTO",
 		TOKEN_DOIS_PONTOS:      "DOIS_PONTOS",
 		TOKEN_VIRGULA:          "VÍRGULA",
@@ -176,6 +182,8 @@ func (tt TokenType) NomeLegivel() string {
 		TOKEN_PARENTESE_FECHA:  "PARÊNTESE_FECHA",
 		TOKEN_COLCHETE_ABRE:    "COLCHETE_ABRE",
 		TOKEN_COLCHETE_FECHA:   "COLCHETE_FECHA",
+		TOKEN_CHAVE_ABRE:       "CHAVE_ABRE",
+		TOKEN_CHAVE_FECHA:      "CHAVE_FECHA",
 		TOKEN_TIPO:             "TIPO",
 	}
 	if nome, ok := nomes[tt]; ok {
@@ -304,10 +312,22 @@ var palavrasChave = map[string]TokenType{
 	"Sinalize":          TOKEN_SINALIZE,
 	"sinalize":          TOKEN_SINALIZE,
 
-	// Operadores textuais
-	"e":          TOKEN_MAIS,  // concatenação / adição contextual
-	"menos":      TOKEN_MENOS,
-	"mais":       TOKEN_MAIS,
+	// Operadores textuais (português)
+	"e":            TOKEN_MAIS,         // concatenação / adição contextual
+	"mais":         TOKEN_MAIS,
+	"soma":         TOKEN_MAIS,
+	"menos":        TOKEN_MENOS,
+	"subtrai":      TOKEN_MENOS,
+	"multiplica":   TOKEN_MULTIPLICAR,
+	"divide":       TOKEN_DIVIDIR,
+	"porcentagem":  TOKEN_MODULO,
+	"módulo":       TOKEN_MODULO,
+	"modulo":       TOKEN_MODULO,
+
+	// Operadores de comparação textuais
+	"idêntico":     TOKEN_IGUAL,
+	"identico":     TOKEN_IGUAL,
+	"diferente":    TOKEN_DIFERENTE,
 
 	// Tipos
 	"Texto":      TOKEN_TIPO,

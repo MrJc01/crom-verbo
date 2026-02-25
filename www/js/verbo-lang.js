@@ -63,6 +63,8 @@ function registerVerboLanguage(monaco) {
             'for', 'menor', 'maior', 'igual', 'que', 'não', 'Não',
             'ao', 'aos', 'no', 'na', 'nos', 'nas',
             'pelo', 'pela', 'pelos', 'pelas', 'por',
+            'soma', 'subtrai', 'multiplica', 'divide', 'porcentagem',
+            'módulo', 'modulo', 'idêntico', 'identico', 'diferente',
         ],
 
         // Literals
@@ -108,7 +110,8 @@ function registerVerboLanguage(monaco) {
                 }],
 
                 // Operators
-                [/[+\-*\/]/, 'operator'],
+                [/[+\-*\/%]/, 'operator'],
+                [/[!=]=/, 'operator'],
                 [/[=]/, 'operator'],
 
                 // Delimiters
@@ -117,6 +120,7 @@ function registerVerboLanguage(monaco) {
                 [/,/, 'delimiter.comma'],
                 [/[()]/, 'delimiter.parenthesis'],
                 [/[\[\]]/, 'delimiter.bracket'],
+                [/[{}]/, 'delimiter.bracket'],
 
                 // Whitespace
                 [/\s+/, 'white'],

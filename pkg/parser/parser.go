@@ -323,14 +323,14 @@ func (p *Parser) analisarExpressaoCondicional() ast.Expressao {
 		p.avancar()
 	}
 
-	esquerda := p.analisarExpressaoPrimaria()
+	esquerda := p.analisarExpressao()
 
 	// Verificar "for" (subjuntivo)
 	if p.tokenAtual().Tipo == lexer.TOKEN_FOR {
 		p.avancar()
 	}
 
-	// Operador de comparação: "menor que", "maior que", "igual"
+	// Operador de comparação: "menor que", "maior que", "igual", "diferente"
 	var operador string
 	switch p.tokenAtual().Tipo {
 	case lexer.TOKEN_MENOR:
@@ -348,11 +348,14 @@ func (p *Parser) analisarExpressaoCondicional() ast.Expressao {
 	case lexer.TOKEN_IGUAL:
 		p.avancar()
 		operador = "igual"
+	case lexer.TOKEN_DIFERENTE:
+		p.avancar()
+		operador = "diferente"
 	default:
 		return esquerda
 	}
 
-	direita := p.analisarExpressaoPrimaria()
+	direita := p.analisarExpressao()
 
 	return &ast.ExpressaoBinaria{
 		Token:    p.tokenAtual(),
@@ -698,7 +701,14 @@ func (p *Parser) analisarBloco() *ast.Bloco {
 	defer func() { p.nivelProfundidade-- }()
 
 	bloco := &ast.Bloco{}
-	
+
+	// Suporte a blocos com chaves: { ... }
+	usandoChaves := false
+	if p.tokenAtual().Tipo == lexer.TOKEN_CHAVE_ABRE {
+		p.avancar() // consumir '{'
+		usandoChaves = true
+	}
+
 	for !p.fimDoArquivo() {
 		tok := p.tokenAtual()
 
@@ -707,8 +717,14 @@ func (p *Parser) analisarBloco() *ast.Bloco {
 			break
 		}
 
-		// Se o usuário colocar um ponto solto na linha de baixo para fechar o bloco explícitamente: ". "
-		if tok.Tipo == lexer.TOKEN_PONTO {
+		// Fechamento com '}' quando usando chaves
+		if usandoChaves && tok.Tipo == lexer.TOKEN_CHAVE_FECHA {
+			p.avancar()
+			break
+		}
+
+		// Se o usuário colocar um ponto solto para fechar o bloco explícitamente: "."
+		if !usandoChaves && tok.Tipo == lexer.TOKEN_PONTO {
 			p.avancar()
 			break
 		}
@@ -784,7 +800,9 @@ func (p *Parser) analisarExpressaoAditiva() ast.Expressao {
 func (p *Parser) analisarExpressaoMultiplicativa() ast.Expressao {
 	esquerda := p.analisarExpressaoPrimaria()
 
-	for p.tokenAtual().Tipo == lexer.TOKEN_MULTIPLICAR || p.tokenAtual().Tipo == lexer.TOKEN_DIVIDIR {
+	for p.tokenAtual().Tipo == lexer.TOKEN_MULTIPLICAR ||
+		p.tokenAtual().Tipo == lexer.TOKEN_DIVIDIR ||
+		p.tokenAtual().Tipo == lexer.TOKEN_MODULO {
 		op := p.avancar()
 		direita := p.analisarExpressaoPrimaria()
 		esquerda = &ast.ExpressaoBinaria{
