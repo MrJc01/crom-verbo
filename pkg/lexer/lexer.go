@@ -167,6 +167,11 @@ func (l *Lexer) proximoToken() (Token, error) {
 		return Token{Tipo: TOKEN_DIVIDIR, Valor: "/", Linha: linha, Coluna: coluna}, nil
 
 	case l.caractere == '=':
+		if l.espiarProximo() == '=' {
+			l.lerCaractere() // consumir o primeiro '='
+			l.lerCaractere() // consumir o segundo '='
+			return Token{Tipo: TOKEN_IGUAL, Valor: "==", Linha: linha, Coluna: coluna}, nil
+		}
 		l.lerCaractere()
 		return Token{Tipo: TOKEN_ATRIBUIR, Valor: "=", Linha: linha, Coluna: coluna}, nil
 

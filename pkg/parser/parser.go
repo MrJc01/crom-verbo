@@ -744,35 +744,12 @@ func (p *Parser) ehInicioDeclaracaoNivelSuperior() bool {
 		return true
 	}
 
-	// Só aplicar heurística de artigos/Exibir se estamos em bloco profundo (>= 2).
-	// nivelProfundidade == 1 é o corpo de uma função/if/loop, que pode
-	// conter livremente declarações como Se, Exibir, Repita sem sair.
-	if p.nivelProfundidade < 2 {
-		return false
-	}
-
-	// Artigo definido/indefinido = declaração de variável/constante de nível superior
-	if tok.Tipo == lexer.TOKEN_ARTIGO_DEFINIDO || tok.Tipo == lexer.TOKEN_ARTIGO_INDEFINIDO {
-		return true
-	}
-
-	// "Exibir" no nível superior
-	if tok.Tipo == lexer.TOKEN_EXIBIR {
-		return true
-	}
-
-	// Identificador seguido de "com" = chamada de função no nível superior
-	if tok.Tipo == lexer.TOKEN_IDENTIFICADOR && p.espiar().Tipo == lexer.TOKEN_COM {
-		return true
-	}
-
-	// V2: Novos tokens de nível superior
-	if tok.Tipo == lexer.TOKEN_SIMULTANEAMENTE ||
-		tok.Tipo == lexer.TOKEN_TENTE ||
-		tok.Tipo == lexer.TOKEN_SINALIZE {
-		return true
-	}
-
+	// Só aplicar heurística de artigos/Exibir se estamos em bloco muito profundo (>= 3).
+	// nivelProfundidade 1 = corpo de função/if/loop
+	// nivelProfundidade 2 = Se dentro de Repita (comum, deve funcionar normalmente)
+	// nivelProfundidade >= 3 = aninhamento triplo, pode precisar da heurística
+	// NOTA: Desabilitado — confiamos no terminador '.' para fechar blocos em qualquer
+	// profundidade. A heurística antiga quebrava blocos Se aninhados prematuramente.
 	return false
 }
 

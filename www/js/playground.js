@@ -151,53 +151,57 @@ Exibir com (site).`
     logica_fizzbuzz: {
         nome: 'Lógica: FizzBuzz',
         codigo: `// O clássico problema da entrevista de programação!
-// Conta de 1 a 20: 
+// Conta de 1 a 20:
 // - Múltiplos de 3: Fizz
 // - Múltiplos de 5: Buzz
-// - Ambos: FizzBuzz
+// - Múltiplos de 15: FizzBuzz
 
 Exibir com ("Iniciando FizzBuzz...").
 Um numero está 0.
 
 Repita 20 vezes:
     numero está numero + 1.
-    
-    // Como Verbo não tem o operador %, usamos matemática de inteiros
-    // resto = numero - (numero / divisor * divisor)
+
+    // Calculando os restos por aritmética de inteiros
+    Um divQuinze está numero / 15.
+    Um multQuinze está divQuinze * 15.
+    Um restoQuinze está numero - multQuinze.
+
     Um divTres está numero / 3.
     Um multTres está divTres * 3.
     Um restoTres está numero - multTres.
-    
+
     Um divCinco está numero / 5.
     Um multCinco está divCinco * 5.
     Um restoCinco está numero - multCinco.
-    
-    Um escrito está 0.
-    Se restoTres == 0 e restoCinco == 0, então:
+
+    Um flag está 0.
+
+    Se restoQuinze == 0, então:
         Exibir com ("FizzBuzz").
-        escrito está 1.
+        flag está 1.
     .
-    
-    Se escrito == 0, então:
-        Se restoTres == 0, então:
+
+    Se restoTres == 0, então:
+        Se flag == 0, então:
             Exibir com ("Fizz").
-            escrito está 1.
+            flag está 1.
         .
     .
-    
-    Se escrito == 0, então:
-        Se restoCinco == 0, então:
+
+    Se restoCinco == 0, então:
+        Se flag == 0, então:
             Exibir com ("Buzz").
-            escrito está 1.
+            flag está 1.
         .
     .
-    
-    Se escrito == 0, então:
+
+    Se flag == 0, então:
         Exibir com (numero).
     .
 .
 
-Exibir com ("Fim!").`
+Exibir com ("Concluído!").`
     },
     logica_fibonacci: {
         nome: 'Lógica: Fibonacci',
