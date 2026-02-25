@@ -14,7 +14,7 @@ Obrigado por considerar contribuir com o projeto Verbo! Este guia explica como p
 
 ```bash
 # Clonar o repositório
-git clone https://github.com/juanxto/crom-verbo.git
+git clone https://github.com/MrJc01/crom-verbo.git
 cd crom-verbo
 
 # Verificar que tudo compila
@@ -90,4 +90,4 @@ Seja respeitoso. A Verbo é um projeto para a comunidade lusófona de tecnologia
 
 ---
 
-Dúvidas? Abra uma [issue](https://github.com/juanxto/crom-verbo/issues)!
+Dúvidas? Abra uma [issue](https://github.com/MrJc01/crom-verbo/issues)!

@@ -861,7 +861,7 @@
           <ul class="space-y-3 text-sm text-white/30">
             <li><a href="playground.php" class="hover:text-verde-neon transition-colors">⚡ Playground</a></li>
             <li><a href="docs.php" class="hover:text-verde-neon transition-colors">📖 Documentação</a></li>
-            <li><a href="https://github.com/juanxto/crom-verbo" target="_blank"
+            <li><a href="https://github.com/MrJc01/crom-verbo" target="_blank"
                 class="hover:text-verde-neon transition-colors">📦 GitHub ↗</a></li>
           </ul>
         </div>
