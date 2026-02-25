@@ -713,6 +713,11 @@ func (p *Parser) analisarBloco() *ast.Bloco {
 			break
 		}
 
+		// Quebra automática caso encontremos uma declaração de nível superior (ex: nova função)
+		if p.ehInicioDeclaracaoNivelSuperior() {
+			break
+		}
+
 		decl := p.analisarDeclaracao()
 		if decl != nil {
 			bloco.Declaracoes = append(bloco.Declaracoes, decl)
@@ -726,18 +731,24 @@ func (p *Parser) analisarBloco() *ast.Bloco {
 // Quando estamos dentro de um bloco (nivelProfundidade > 1), padrões como artigos,
 // Exibir, e chamadas de função indicam que saímos do bloco.
 func (p *Parser) ehInicioDeclaracaoNivelSuperior() bool {
-	// Só aplicar heurística se estamos em bloco profundo (>= 2).
+	tok := p.tokenAtual()
+
+	// "Para" seguido de identificador = nova função (SEMPRE é nível superior, em qualquer profundidade)
+	if tok.Tipo == lexer.TOKEN_PARA && p.espiar().Tipo == lexer.TOKEN_IDENTIFICADOR {
+		return true
+	}
+
+	// "A Entidade" = declaração de entidade (sempre nível superior)
+	if (tok.Tipo == lexer.TOKEN_ARTIGO_DEFINIDO || tok.Tipo == lexer.TOKEN_ARTIGO_INDEFINIDO) &&
+		p.espiar().Tipo == lexer.TOKEN_ENTIDADE {
+		return true
+	}
+
+	// Só aplicar heurística de artigos/Exibir se estamos em bloco profundo (>= 2).
 	// nivelProfundidade == 1 é o corpo de uma função/if/loop, que pode
 	// conter livremente declarações como Se, Exibir, Repita sem sair.
 	if p.nivelProfundidade < 2 {
 		return false
-	}
-
-	tok := p.tokenAtual()
-	
-	// "Para" seguido de identificador = nova função (sempre é nível superior)
-	if tok.Tipo == lexer.TOKEN_PARA && p.espiar().Tipo == lexer.TOKEN_IDENTIFICADOR {
-		return true
 	}
 
 	// Artigo definido/indefinido = declaração de variável/constante de nível superior

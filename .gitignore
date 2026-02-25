@@ -1,0 +1,43 @@
+# ═══════════════════════════════════════════
+# Crom-Verbo — .gitignore
+# ═══════════════════════════════════════════
+
+# Binários compilados
+/bin/
+/build/
+
+# Executáveis de teste/exemplo gerados na raiz
+/test
+/funcoes
+/v2_completo
+/olamundo
+/calculadora
+
+# Binários temporários gerados pela API PHP (padrão verbo_XXXXXX)
+verbo_*
+!verbo_*.go
+
+# Arquivos Go gerados automaticamente pelo Transpilador
+*_verbo.go
+fizz_verbo.go
+
+# Artefatos da API Web PHP
+www/api/verbo_*
+
+# Binários de distribuição (versionados via GitHub Releases)
+www/downloads/
+
+# Script de debug (não versionar)
+www/testar_compilador.sh
+
+# Arquivos JS temporários / rascunhos
+www/js/new_exemplos.js
+
+# Arquivos do OS e IDEs
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~

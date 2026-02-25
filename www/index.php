@@ -605,22 +605,23 @@
             <div class="flex items-center gap-3">
               <div class="code-dots"><span class="bg-[#ff5f57]"></span><span class="bg-[#febc2e]"></span><span
                   class="bg-[#28c840]"></span></div>
-              <span class="font-mono text-xs text-white/30">fibonacci.vrb</span>
+              <span class="font-mono text-xs text-white/30">funcoes.vrb</span>
             </div>
-            <a href="playground.php?exemplo=fibonacci"
+            <a href="playground.php?exemplo=funcoes"
               class="text-xs text-verde-neon hover:text-verde-light transition-colors font-semibold">▶ Testar</a>
           </div>
           <div class="code-body">
-            <div><span class="syn-kw">Para</span> <span class="syn-id">Fibonacci</span> <span
-                class="syn-op">usando</span> (<span class="syn-id">n</span>: <span class="syn-tp">Inteiro</span>):</div>
-            <div>&nbsp;&nbsp;<span class="syn-kw">Se</span> <span class="syn-id">n</span> <span class="syn-op">for menor
-                que</span> <span class="syn-num">2</span>, <span class="syn-op">então</span>:</div>
-            <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="syn-kw">Retorne</span> <span class="syn-id">n</span>.</div>
-            <div>&nbsp;&nbsp;<span class="syn-kw">Retorne</span> <span class="syn-id">Fibonacci</span> <span
-                class="syn-op">com</span> (<span class="syn-id">n</span> - <span class="syn-num">1</span>) + <span
-                class="syn-id">Fibonacci</span> <span class="syn-op">com</span> (<span class="syn-id">n</span> - <span
-                class="syn-num">2</span>).</div>
-            <div class="mt-3 pt-3 border-t border-white/5 syn-cmt">→ 0, 1, 1, 2, 3, 5, 8, 13...</div>
+            <div><span class="syn-kw">Para</span> <span class="syn-id">Dobrar</span> <span class="syn-op">usando</span>
+              (<span class="syn-id">x</span>: <span class="syn-tp">Inteiro</span>):</div>
+            <div>&nbsp;&nbsp;<span class="syn-kw">Retorne</span> <span class="syn-id">x</span> * <span
+                class="syn-num">2</span>.</div>
+            <div><span class="syn-op">.</span></div>
+            <div class="mt-2"><span class="syn-art">O</span> <span class="syn-id">resultado</span> <span
+                class="syn-op">é</span> <span class="syn-id">Dobrar</span> <span class="syn-op">com</span> (<span
+                class="syn-num">21</span>).</div>
+            <div><span class="syn-fn">Exibir</span> <span class="syn-op">com</span> (<span
+                class="syn-id">resultado</span>).</div>
+            <div class="mt-3 pt-3 border-t border-white/5 syn-cmt">→ 42</div>
           </div>
         </div>
 

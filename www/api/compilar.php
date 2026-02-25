@@ -72,11 +72,13 @@ $descriptors = [
     2 => ['pipe', 'w'],  // stderr
 ];
 
+$projectRoot = realpath(__DIR__ . '/../../');
+
 $process = proc_open(
     escapeshellcmd($verboBin) . ' executar ' . escapeshellarg($tmpFile),
     $descriptors,
     $pipes,
-    $tmpDir,
+    $projectRoot, // CWD alterado para a raiz do repositório para o "go run" enxergar go.mod
     ['PATH' => getenv('PATH'), 'HOME' => getenv('HOME'), 'GOPATH' => getenv('GOPATH')]
 );
 
@@ -106,16 +108,20 @@ if (is_resource($process)) {
 
         $changed = @stream_select($read, $write, $except, 0, 200000);
 
-        if ($changed === false) break;
+        if ($changed === false)
+            break;
 
         foreach ($read as $stream) {
             $data = fread($stream, 8192);
-            if ($stream === $pipes[1]) $output .= $data;
-            if ($stream === $pipes[2]) $erro .= $data;
+            if ($stream === $pipes[1])
+                $output .= $data;
+            if ($stream === $pipes[2])
+                $erro .= $data;
         }
 
         $status = proc_get_status($process);
-        if (!$status['running']) break;
+        if (!$status['running'])
+            break;
     }
 
     fclose($pipes[1]);
@@ -136,6 +142,6 @@ $binFile = str_replace('.vrb', '', $tmpFile);
 // Response
 echo json_encode([
     'output' => $output,
-    'erro'   => $erro,
-    'tempo'  => $elapsed,
+    'erro' => $erro,
+    'tempo' => $elapsed,
 ], JSON_UNESCAPED_UNICODE);

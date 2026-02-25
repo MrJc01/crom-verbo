@@ -337,7 +337,7 @@ func TestTranspilarCanais(t *testing.T) {
 	codigoGerado := transpilarCodigo(t, codigo)
 
 	esperados := []string{
-		"via := make(chan int)",
+		"via := make(chan int, 100)",
 		"via <- 10",
 		"valor := <-via",
 	}

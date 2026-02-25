@@ -30,6 +30,7 @@
         --font-sans: 'Inter', system-ui, sans-serif;
         --font-mono: 'JetBrains Mono', monospace;
       }
+      
     </style>
 
     <style>
@@ -178,62 +179,88 @@
                 </div>
 
                 <!-- Center -->
-                <div class="flex items-center gap-3">
-                    <select id="exemplo-select" onchange="carregarExemplo(this.value)" class="custom-select font-mono">
-                        <option value="" disabled>📂 Exemplos</option>
-                        <option value="ola_mundo" selected>Olá Mundo</option>
-                        <option value="fibonacci">Fibonacci</option>
-                        <option value="calculadora">Calculadora</option>
-                        <option value="concorrencia">Concorrência</option>
-                        <option value="entidade">Entidades</option>
-                        <option value="listas">Listas</option>
-                        <option value="erros">Erros</option>
-                        <option value="canais">Canais</option>
+                <div class="relative w-full sm:w-64 group">
+                    <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none text-verde-neon">
+                        <svg class="w-5 h-5 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                            </path>
+                        </svg>
+                    </div>
+                    <select id="exemplo-select"
+                        class="w-full bg-slate-800/80 backdrop-blur border border-slate-700/50 hover:border-verde-neon/50 text-slate-200 rounded-xl pl-10 pr-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-verde-neon/30 appearance-none cursor-pointer transition-all shadow-lg"
+                        onchange="carregarExemplo(this.value)">
+                        <option value="" disabled selected>Escolha um template...</option>
+                        <optgroup label="Sintaxe Clássica">
+                            <option value="ola_mundo">Olá Mundo</option>
+                            <option value="variaveis">Variáveis</option>
+                            <option value="funcoes">Funções</option>
+                            <option value="calculadora">Calculadora</option>
+                            <option value="listas">Listas</option>
+                            <option value="erros">Tratamento de Erros</option>
+                        </optgroup>
+                        <optgroup label="Renderização UI (Saída HTML)">
+                            <option value="html_perfil">Cartão de Perfil</option>
+                            <option value="html_tarefas">Lista de Tarefas</option>
+                            <option value="html_galeria">Galeria de Imagens</option>
+                            <option value="html_tabela">Tabela de Preços</option>
+                            <option value="html_login">Tela de Login</option>
+                        </optgroup>
+                        <optgroup label="Desafios de Lógica (Saída Console)">
+                            <option value="logica_fizzbuzz">Problema FizzBuzz</option>
+                            <option value="logica_fibonacci">Sequência de Fibonacci</option>
+                        </optgroup>
                     </select>
-
-                    <button id="btn-run" onclick="executarCodigo()"
-                        class="flex items-center gap-2 px-5 py-2 rounded-xl bg-verde text-white text-sm font-bold hover:bg-verde-light hover:shadow-lg hover:shadow-verde/30 active:scale-95 transition-all">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M8 5v14l11-7z" />
+                    <div
+                        class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400 group-hover:text-verde-neon transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
                         </svg>
-                        <span class="hidden sm:inline">Executar</span>
-                    </button>
+                    </div>
                 </div>
 
-                <!-- Right -->
-                <div class="flex items-center gap-0.5">
-                    <button onclick="copiarCodigo()" class="tool-btn" title="Copiar código">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                        </svg>
-                    </button>
-                    <button onclick="baixarCodigo()" class="tool-btn" title="Baixar .vrb">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                        </svg>
-                    </button>
-                    <button onclick="compartilhar()" class="tool-btn" title="Compartilhar link">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                        </svg>
-                    </button>
-                    <div class="w-px h-5 bg-white/5 mx-1"></div>
-                    <button onclick="verboTheme.toggle()" class="tool-btn" title="Alternar tema">
-                        <svg data-theme-icon="light" class="w-4 h-4 hidden" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                        <svg data-theme-icon="dark" class="w-4 h-4" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                        </svg>
-                    </button>
-                </div>
+                <button id="btn-run" onclick="executarCodigo()"
+                    class="flex items-center gap-2 px-5 py-2 rounded-xl bg-verde text-white text-sm font-bold hover:bg-verde-light hover:shadow-lg hover:shadow-verde/30 active:scale-95 transition-all">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                    </svg>
+                    <span class="hidden sm:inline">Executar</span>
+                </button>
+            </div>
+
+            <!-- Right -->
+            <div class="flex items-center gap-0.5">
+                <button onclick="copiarCodigo()" class="tool-btn" title="Copiar código">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                </button>
+                <button onclick="baixarCodigo()" class="tool-btn" title="Baixar .vrb">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                </button>
+                <button onclick="compartilhar()" class="tool-btn" title="Compartilhar link">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                    </svg>
+                </button>
+                <div class="w-px h-5 bg-white/5 mx-1"></div>
+                <button onclick="verboTheme.toggle()" class="tool-btn" title="Alternar tema">
+                    <svg data-theme-icon="light" class="w-4 h-4 hidden" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <svg data-theme-icon="dark" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
             </div>
             <!-- Shortcut hint -->
             <div class="text-center text-[10px] text-white/10 pb-1 font-mono hidden sm:block">Ctrl+Enter para executar
@@ -299,6 +326,8 @@
                         class="p-5 font-mono text-sm leading-relaxed h-full overflow-auto whitespace-pre-wrap text-white/50">// O código Go transpilado aparecerá aqui após a execução.</pre>
 
                     <div data-panel="html" style="display:none" class="h-full">
+                        <button onclick="document.getElementById('output-html').contentWindow.location.reload()"
+                            class="tool-btn">Atualizar</button>
                         <iframe id="output-html" class="w-full h-full border-0 bg-white"
                             sandbox="allow-scripts"></iframe>
                     </div>

@@ -83,8 +83,39 @@ func CriarLista(itens ...string) string {
 	return fmt.Sprintf("<ul>\n%s\n</ul>", strings.Join(lis, "\n"))
 }
 
+// toStringSlice converte []interface{} ou []string para []string.
+func toStringSlice(v interface{}) []string {
+	switch val := v.(type) {
+	case []string:
+		return val
+	case []interface{}:
+		result := make([]string, len(val))
+		for i, item := range val {
+			result[i] = fmt.Sprintf("%v", item)
+		}
+		return result
+	default:
+		return nil
+	}
+}
+
 // CriarTabela gera uma tabela HTML a partir de headers e linhas.
-func CriarTabela(headers []string, linhas [][]string) string {
+// Aceita []string, []interface{}, [][]string ou [][]interface{} graças
+// à conversão automática de tipos do runtime Verbo.
+func CriarTabela(headersRaw interface{}, linhasRaw interface{}) string {
+	headers := toStringSlice(headersRaw)
+
+	// Converter linhas: pode ser [][]string, [][]interface{} ou []interface{} contendo sub-slices
+	var linhas [][]string
+	switch lv := linhasRaw.(type) {
+	case [][]string:
+		linhas = lv
+	case []interface{}:
+		for _, row := range lv {
+			linhas = append(linhas, toStringSlice(row))
+		}
+	}
+
 	var sb strings.Builder
 	sb.WriteString("<table>\n  <thead>\n    <tr>\n")
 	for _, h := range headers {

@@ -61,7 +61,8 @@ file_put_contents($tmpFile, $codigo);
 // Executar transpilação (compilar gera o .go)
 $goFile = str_replace('.vrb', '_verbo.go', $tmpFile);
 
-$cmd = escapeshellcmd($verboBin) . ' compilar ' . escapeshellarg($tmpFile) . ' 2>&1';
+$projectRoot = realpath(__DIR__ . '/../../');
+$cmd = 'cd ' . escapeshellarg($projectRoot) . ' && ' . escapeshellcmd($verboBin) . ' compilar ' . escapeshellarg($tmpFile) . ' 2>&1';
 $output = shell_exec($cmd);
 
 $go_code = '';

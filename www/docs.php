@@ -535,6 +535,7 @@ Exibir com (saudacao).</textarea>
                 <div class="mini-pg mt-3">
                     <textarea id="mp-funcoes" spellcheck="false">Para Dobrar usando (n: Inteiro):
     Retorne n * 2.
+.
 
 O resultado é Dobrar com (21).
 Exibir com (resultado).</textarea>
@@ -711,6 +712,7 @@ Exibir com (item).</textarea>
     Exibir com ("Processando dados...").
     Exibir com ("Enviando email...").
     Exibir com ("Gerando relatório...").
+.
 
 Exibir com ("Tudo pronto!").</textarea>
                     <div class="mini-pg-bar">
@@ -748,6 +750,7 @@ Exibir com ("Tudo pronto!").</textarea>
 Capture erro:
     Exibir com ("Erro capturado:").
     Exibir com (erro).
+.
 
 Exibir com ("Programa continua!").</textarea>
                     <div class="mini-pg-bar">
