@@ -1,0 +1,11 @@
+// Concorrência em Verbo
+// Demonstra execução simultânea com goroutines.
+
+Exibir com ("Iniciando tarefas paralelas...").
+
+Simultaneamente:
+    Exibir com ("Tarefa 1: Processando dados.").
+    Exibir com ("Tarefa 2: Enviando email.").
+    Exibir com ("Tarefa 3: Gerando relatório.").
+
+Exibir com ("Todas as tarefas concluídas!").

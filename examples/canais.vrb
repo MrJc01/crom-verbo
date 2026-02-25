@@ -1,0 +1,39 @@
+// Exemplo de concorrência em Verbo 2.0 usando Canais e Simultaneamente
+
+Para ProcessarPacote usando (pacote: Inteiro, canal_envio: Canal_Inteiros) :
+    Exibir "Processando pacote...".
+    // Simula um processamento
+    O resultado é pacote * 10.
+    Enviar resultado para canal_envio.
+.
+
+Para principal :
+    // Criando o canal tipado globalmente
+    Um resultados é um Canal de Inteiros.
+
+    Exibir "Iniciando workers simultâneos (Goroutines)...".
+
+    // Iniciando execução assíncrona
+    Simultaneamente :
+        ProcessarPacote com (1, resultados).
+    .
+    Simultaneamente :
+        ProcessarPacote com (2, resultados).
+    .
+    Simultaneamente :
+        ProcessarPacote com (3, resultados).
+    .
+
+    // Aguardando resultados do canal
+    O res1 é Receber de resultados.
+    O res2 é Receber de resultados.
+    O res3 é Receber de resultados.
+
+    Exibir "Todos os pacotes processados!".
+    Exibir res1.
+    Exibir res2.
+    Exibir res3.
+.
+
+// Invocar a função principal
+principal com ().

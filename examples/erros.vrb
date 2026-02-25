@@ -1,0 +1,13 @@
+// Tratamento de Erros em Verbo
+// Demonstra Tente/Capture com defer/recover.
+
+Exibir com ("Testando tratamento de erros...").
+
+Tente:
+    Exibir com ("Executando operação arriscada...").
+    Sinalize com ("algo deu errado!").
+    Exibir com ("Esta linha nunca será executada.").
+Capture erro:
+    Exibir com ("Erro capturado com sucesso!").
+
+Exibir com ("Programa continuou após o erro.").

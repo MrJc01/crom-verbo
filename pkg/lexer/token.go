@@ -50,7 +50,33 @@ const (
 	TOKEN_IGUAL              // igual
 	TOKEN_QUE                // que
 	TOKEN_DE                 // de / do / da
+	TOKEN_QUANDO             // Quando (pattern matching futuro)
 	TOKEN_DADO               // Dado (premissa / guard clause)
+	TOKEN_INCLUIR            // Incluir (importação)
+	// V2: Conectores Gramaticais
+	TOKEN_AO                 // ao / aos
+	TOKEN_NO                 // no / na / nos / nas
+	TOKEN_PELO               // pelo / pela / pelos / pelas
+	TOKEN_POR                // por
+
+	// V2: Canais e Concorrência
+	TOKEN_CANAL              // Canal
+	TOKEN_ENVIAR             // Enviar
+	TOKEN_RECEBER            // Receber
+
+	// V2: Estruturas / Entidades
+	TOKEN_ENTIDADE           // Entidade (declaração de struct)
+	TOKEN_CONTENDO           // contendo (campos da entidade)
+	TOKEN_NOVO               // novo (instanciação)
+
+	// V2: Concorrência
+	TOKEN_SIMULTANEAMENTE    // Simultaneamente (goroutines)
+	TOKEN_AGUARDE            // Aguarde (sync)
+
+	// V2: Tratamento de Erros
+	TOKEN_TENTE              // Tente (try)
+	TOKEN_CAPTURE            // Capture (catch/recover)
+	TOKEN_SINALIZE           // Sinalize (panic)
 
 	// Operadores
 	TOKEN_MAIS               // +
@@ -122,6 +148,22 @@ func (tt TokenType) NomeLegivel() string {
 		TOKEN_QUE:              "QUE",
 		TOKEN_DE:               "DE",
 		TOKEN_DADO:             "DADO",
+		TOKEN_INCLUIR:          "INCLUIR",
+		TOKEN_AO:               "AO",
+		TOKEN_NO:               "NO",
+		TOKEN_PELO:             "PELO",
+		TOKEN_POR:              "POR",
+		TOKEN_CANAL:            "CANAL",
+		TOKEN_ENVIAR:           "ENVIAR",
+		TOKEN_RECEBER:          "RECEBER",
+		TOKEN_ENTIDADE:         "ENTIDADE",
+		TOKEN_CONTENDO:         "CONTENDO",
+		TOKEN_NOVO:             "NOVO",
+		TOKEN_SIMULTANEAMENTE:  "SIMULTANEAMENTE",
+		TOKEN_AGUARDE:          "AGUARDE",
+		TOKEN_TENTE:            "TENTE",
+		TOKEN_CAPTURE:          "CAPTURE",
+		TOKEN_SINALIZE:         "SINALIZE",
 		TOKEN_MAIS:             "MAIS",
 		TOKEN_MENOS:            "MENOS",
 		TOKEN_MULTIPLICAR:      "MULTIPLICAR",
@@ -216,6 +258,51 @@ var palavrasChave = map[string]TokenType{
 	"das":        TOKEN_DE,
 	"Dado":       TOKEN_DADO,
 	"dado":       TOKEN_DADO,
+	"Incluir":    TOKEN_INCLUIR,
+	"incluir":    TOKEN_INCLUIR,
+
+	// V2: Conectores Gramaticais
+	"ao":         TOKEN_AO,
+	"aos":        TOKEN_AO,
+	"no":         TOKEN_NO,
+	"na":         TOKEN_NO,
+	"nos":        TOKEN_NO,
+	"nas":        TOKEN_NO,
+	"pelo":       TOKEN_PELO,
+	"pela":       TOKEN_PELO,
+	"pelos":      TOKEN_PELO,
+	"pelas":      TOKEN_PELO,
+	"por":        TOKEN_POR,
+
+	// V2: Canais e Concorrência
+	"Canal":      TOKEN_CANAL,
+	"canal":      TOKEN_CANAL,
+	"Enviar":     TOKEN_ENVIAR,
+	"enviar":     TOKEN_ENVIAR,
+	"Receber":    TOKEN_RECEBER,
+	"receber":    TOKEN_RECEBER,
+
+	// V2: Estruturas
+	"Entidade":          TOKEN_ENTIDADE,
+	"entidade":          TOKEN_ENTIDADE,
+	"contendo":          TOKEN_CONTENDO,
+	"Contendo":          TOKEN_CONTENDO,
+	"novo":              TOKEN_NOVO,
+	"Novo":              TOKEN_NOVO,
+
+	// V2: Concorrência
+	"Simultaneamente":   TOKEN_SIMULTANEAMENTE,
+	"simultaneamente":   TOKEN_SIMULTANEAMENTE,
+	"Aguarde":           TOKEN_AGUARDE,
+	"aguarde":           TOKEN_AGUARDE,
+
+	// V2: Erros
+	"Tente":             TOKEN_TENTE,
+	"tente":             TOKEN_TENTE,
+	"Capture":           TOKEN_CAPTURE,
+	"capture":           TOKEN_CAPTURE,
+	"Sinalize":          TOKEN_SINALIZE,
+	"sinalize":          TOKEN_SINALIZE,
 
 	// Operadores textuais
 	"e":          TOKEN_MAIS,  // concatenação / adição contextual

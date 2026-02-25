@@ -216,5 +216,156 @@ func TestConverterOperador(t *testing.T) {
 	}
 }
 
+// -----------------------------------------------
+// Testes V2
+// -----------------------------------------------
+
+func TestTranspilarEntidade(t *testing.T) {
+	entrada := `A Entidade Produto contendo (nome: Texto, preco: Inteiro).`
+	saida := transpilarCodigo(t, entrada)
+
+	if !strings.Contains(saida, "type Produto struct {") {
+		t.Errorf("esperava declaração de struct Produto.\nSaída:\n%s", saida)
+	}
+
+	if !strings.Contains(saida, "Nome string") {
+		t.Errorf("esperava campo 'Nome string'.\nSaída:\n%s", saida)
+	}
+
+	if !strings.Contains(saida, "Preco int") {
+		t.Errorf("esperava campo 'Preco int'.\nSaída:\n%s", saida)
+	}
+}
+
+func TestTranspilarLista(t *testing.T) {
+	entrada := `Uma frutas é ["maçã", "banana"].`
+	saida := transpilarCodigo(t, entrada)
+
+	if !strings.Contains(saida, `frutas := []interface{}{"maçã", "banana"}`) {
+		t.Errorf("esperava literal de lista em Go.\nSaída:\n%s", saida)
+	}
+}
+
+func TestTranspilarTenteCapture(t *testing.T) {
+	entrada := `Tente:
+    Sinalize com ("erro").
+Capture erro:
+    Exibir com (erro).`
+	saida := transpilarCodigo(t, entrada)
+
+	if !strings.Contains(saida, "defer func() {") {
+		t.Errorf("esperava 'defer func() {'.\nSaída:\n%s", saida)
+	}
+
+	if !strings.Contains(saida, "if erro := recover(); erro != nil {") {
+		t.Errorf("esperava 'if erro := recover(); erro != nil {'.\nSaída:\n%s", saida)
+	}
+
+	if !strings.Contains(saida, `panic("erro")`) {
+		t.Errorf("esperava 'panic(\"erro\")'.\nSaída:\n%s", saida)
+	}
+}
+
+func TestTranspilarSimultaneamente(t *testing.T) {
+	entrada := `Simultaneamente:
+    Exibir com ("1").
+    Exibir com ("2").`
+	saida := transpilarCodigo(t, entrada)
+
+	if !strings.Contains(saida, "var wg sync.WaitGroup") {
+		t.Errorf("esperava 'var wg sync.WaitGroup'.\nSaída:\n%s", saida)
+	}
+
+	if !strings.Contains(saida, "wg.Add(2)") {
+		t.Errorf("esperava 'wg.Add(2)'.\nSaída:\n%s", saida)
+	}
+
+	if !strings.Contains(saida, "go func() {") {
+		t.Errorf("esperava 'go func() {'.\nSaída:\n%s", saida)
+	}
+
+	if !strings.Contains(saida, "defer wg.Done()") {
+		t.Errorf("esperava 'defer wg.Done()'.\nSaída:\n%s", saida)
+	}
+
+	if !strings.Contains(saida, "wg.Wait()") {
+		t.Errorf("esperava 'wg.Wait()'.\nSaída:\n%s", saida)
+	}
+}
+
+func TestTranspilarAcessoCampo(t *testing.T) {
+	entrada := `A Entidade Produto contendo (nome: Texto).
+Um prod é Produto com ("Mesa").
+Exibir com (nome de prod).`
+	saida := transpilarCodigo(t, entrada)
+
+	if !strings.Contains(saida, "fmt.Println(prod.Nome)") {
+		t.Errorf("esperava 'fmt.Println(prod.Nome)'.\nSaída:\n%s", saida)
+	}
+}
+
+func TestTranspilarImutabilidade(t *testing.T) {
+	entrada := `A x é 10.
+x está 20.`
+	
+	lex := lexer.Novo(entrada)
+	tokens, _ := lex.Tokenizar()
+	p := parser.Novo(tokens)
+	programa, _ := p.Analisar()
+
+	trans := Novo()
+	_, err := trans.Transpilar(programa)
+	
+	if err == nil {
+		t.Fatal("esperava erro semântico de imutabilidade, mas compilou com sucesso")
+	}
+
+	if !strings.Contains(err.Error(), "imutável") {
+		t.Errorf("esperava mensagem de erro sobre imutabilidade, obteve: %v", err)
+	}
+}
+
 // Ensure imports are used
 var _ = ast.Programa{}
+func TestTranspilarCanais(t *testing.T) {
+	codigo := `
+	Uma via é um Canal de Inteiros.
+	Enviar 10 para via.
+	O valor é Receber de via.
+	`
+
+	codigoGerado := transpilarCodigo(t, codigo)
+
+	esperados := []string{
+		"via := make(chan int)",
+		"via <- 10",
+		"valor := <-via",
+	}
+
+	for _, esp := range esperados {
+		if !strings.Contains(codigoGerado, esp) {
+			t.Errorf("Código gerado não contém a string esperada. Esperava:\n%s\n\nObtido:\n%s", esp, codigoGerado)
+		}
+	}
+}
+
+func TestTranspilarIncluir(t *testing.T) {
+	codigo := `
+	Incluir Matematica.
+	Incluir ExemploCustom.
+	O valor é 10.
+	`
+	codigoGerado := transpilarCodigo(t, codigo)
+
+	esperados := []string{
+		`"github.com/juanxto/crom-verbo/pkg/stdlib/matematica"`,
+		`"exemplocustom"`,
+		`valor := 10`,
+	}
+
+	for _, esp := range esperados {
+		if !strings.Contains(codigoGerado, esp) {
+			t.Errorf("Código gerado não contém a string esperada. Esperava:\n%s\n\nObtido:\n%s", esp, codigoGerado)
+		}
+	}
+}

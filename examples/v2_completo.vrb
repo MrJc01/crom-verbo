@@ -1,0 +1,53 @@
+// Exemplo completo abrangendo todas as funcionalidades do Verbo 2.0
+
+Incluir Matematica.
+Incluir Texto.
+
+A entidade Pessoa contendo (Nome: Texto, Idade: Inteiro, Saldo: Decimal).
+
+Para Saudacao usando (pessoa: Pessoa) :
+    Um nome_maiusculo é Maiusculas de Texto com (Nome de pessoa).
+    Exibir "Olá " + nome_maiusculo + "!".
+.
+
+Para principal :
+    // 1. Entidades e Variáveis Imutáveis
+    O cliente é um novo Pessoa contendo ("Ada Lovelace", 36, 1500.50).
+    Exibir "Cliente cadastrado:".
+    Exibir cliente.
+
+    Saudacao com (cliente).
+
+    // 2. Tratamento de Erros e Pânico
+    Exibir "--- Testando Tratamento de Erros ---".
+    Tente :
+        Exibir "Tentando executar uma operação arriscada...".
+        // Simulação de erro no sistema
+        Sinalize "Saldo insuficiente para a operação.".
+    Capture erro :
+        Exibir "Operação falhou. Motivo:".
+        Exibir erro.
+    .
+
+    // 3. Integração com a Biblioteca Padrão (BibVerbo)
+    Exibir "--- Testando Biblioteca Padrão ---".
+    Um valor_absoluto é Absoluto de Matematica com (-42.5).
+    Exibir "O valor absoluto de -42.5 é:".
+    Exibir valor_absoluto.
+
+    // 4. Listas Literais
+    Exibir "--- Testando Listas ---".
+    Uma precos é [10, 20, 30, 40, 50].
+    O primeiro_preco é precos[0].
+    Exibir "O primeiro preço da lista é:".
+    Exibir primeiro_preco.
+
+    // 5. Estruturas de Repetição Modernas
+    Exibir "--- Iterando sobre a lista ---".
+    Repita para cada preco em precos :
+        Exibir preco.
+    .
+. // Fechar a função principal
+
+// Invocar a função principal para rodar o programa
+principal com ().

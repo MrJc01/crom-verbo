@@ -1,0 +1,13 @@
+// Entidade em Verbo
+// Demonstra criação de structs e acesso a campos.
+
+A Entidade Produto contendo (nome: Texto, preco: Inteiro).
+
+Um cafe é Produto com ("Café Premium", 15).
+Um cha é Produto com ("Chá Verde", 8).
+
+Exibir com ("Cardápio:").
+Exibir com (nome de cafe).
+Exibir com (preco de cafe).
+Exibir com (nome de cha).
+Exibir com (preco de cha).

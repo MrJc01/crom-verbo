@@ -244,6 +244,7 @@ func (e *ExpressaoUnaria) TokenLiteral() string { return e.Token.Valor }
 // Ex: "Calcular com (10, 20)" ou "Saudar com (nome)"
 type ExpressaoChamadaFuncao struct {
 	Token      lexer.Token
+	Objeto     Expressao   // Opcional, para chamadas de método: "obj de metodo com (args)"
 	Nome       string
 	Argumentos []Expressao
 }
@@ -261,3 +262,159 @@ type ExpressaoAgrupada struct {
 func (e *ExpressaoAgrupada) noNo()            {}
 func (e *ExpressaoAgrupada) noExpressao()      {}
 func (e *ExpressaoAgrupada) TokenLiteral() string { return e.Token.Valor }
+
+// -----------------------------------------------
+// V2: Declarações Avançadas
+// -----------------------------------------------
+
+// CampoEntidade representa um campo de uma Entidade (struct).
+type CampoEntidade struct {
+	Nome string
+	Tipo string
+}
+
+// DeclaracaoEntidade representa: "A Entidade Usuario contendo (nome: Texto, idade: Inteiro)."
+type DeclaracaoEntidade struct {
+	Token  lexer.Token     // Token ARTIGO
+	Nome   string          // Nome da entidade
+	Campos []CampoEntidade // Campos da entidade
+}
+
+func (d *DeclaracaoEntidade) noNo()            {}
+func (d *DeclaracaoEntidade) noDeclaracao()     {}
+func (d *DeclaracaoEntidade) TokenLiteral() string { return d.Token.Valor }
+
+// DeclaracaoSimultaneamente representa: "Simultaneamente:"
+type DeclaracaoSimultaneamente struct {
+	Token lexer.Token // Token SIMULTANEAMENTE
+	Corpo *Bloco      // Bloco de declarações a executar em paralelo
+}
+
+func (d *DeclaracaoSimultaneamente) noNo()            {}
+func (d *DeclaracaoSimultaneamente) noDeclaracao()     {}
+func (d *DeclaracaoSimultaneamente) TokenLiteral() string { return d.Token.Valor }
+
+// DeclaracaoTente representa: "Tente: ... Capture erro: ..."
+type DeclaracaoTente struct {
+	Token        lexer.Token // Token TENTE
+	Tentativa    *Bloco      // Bloco "Tente"
+	VariavelErro string      // Nome da variável de erro em "Capture"
+	Captura      *Bloco      // Bloco "Capture" (pode ser nil)
+}
+
+func (d *DeclaracaoTente) noNo()            {}
+func (d *DeclaracaoTente) noDeclaracao()     {}
+func (d *DeclaracaoTente) TokenLiteral() string { return d.Token.Valor }
+
+// DeclaracaoSinalize representa: "Sinalize com (mensagem)."
+type DeclaracaoSinalize struct {
+	Token lexer.Token
+	Valor Expressao
+}
+
+func (d *DeclaracaoSinalize) noNo()            {}
+func (d *DeclaracaoSinalize) noDeclaracao()     {}
+func (d *DeclaracaoSinalize) TokenLiteral() string { return d.Token.Valor }
+
+// -----------------------------------------------
+// V2: Expressões Avançadas
+// -----------------------------------------------
+
+// ExpressaoLista representa: ["elem1", "elem2", "elem3"]
+type ExpressaoLista struct {
+	Token    lexer.Token
+	Elementos []Expressao
+}
+
+func (e *ExpressaoLista) noNo()            {}
+func (e *ExpressaoLista) noExpressao()      {}
+func (e *ExpressaoLista) TokenLiteral() string { return e.Token.Valor }
+
+// ExpressaoAcessoIndice representa: lista[0]
+type ExpressaoAcessoIndice struct {
+	Token  lexer.Token
+	Objeto Expressao // A lista sendo acessada
+	Indice Expressao // O índice
+}
+
+func (e *ExpressaoAcessoIndice) noNo()            {}
+func (e *ExpressaoAcessoIndice) noExpressao()      {}
+func (e *ExpressaoAcessoIndice) TokenLiteral() string { return e.Token.Valor }
+
+// ExpressaoAcessoCampo representa: "nome de usuario" → usuario.Nome
+type ExpressaoAcessoCampo struct {
+	Token  lexer.Token
+	Campo  string    // O campo sendo acessado
+	Objeto Expressao // O objeto que contém o campo
+}
+
+func (e *ExpressaoAcessoCampo) noNo()            {}
+func (e *ExpressaoAcessoCampo) noExpressao()      {}
+func (e *ExpressaoAcessoCampo) TokenLiteral() string { return e.Token.Valor }
+
+// ExpressaoInstanciacao representa: "Usuario com (nome: "Juan", idade: 25)"
+type ExpressaoInstanciacao struct {
+	Token      lexer.Token
+	Tipo       string                   // Nome da entidade
+	Argumentos []Expressao              // Valores dos campos
+}
+
+func (e *ExpressaoInstanciacao) noNo()            {}
+func (e *ExpressaoInstanciacao) noExpressao()      {}
+func (e *ExpressaoInstanciacao) TokenLiteral() string { return e.Token.Valor }
+
+// -----------------------------------------------
+// V2: Canais e Concorrência Avançada
+// -----------------------------------------------
+
+// DeclaracaoCanal representa a criação de um canal: "Um via é um Canal de Inteiros."
+// Ou melhor, o tipo Canal é usado na declaração. "Canal" age como um tipo primitivo "Canal de Tipo"
+// Mas a especificação inicial para parser sugeriu:
+// "Uma via é um Canal de Inteiros."
+// Sendo que "Canal de Inteiros" será tratado no parser como ExpressaoCanal.
+// Vamos criar as expressões necessárias.
+
+// ExpressaoCriarCanal representa: "Canal de Tipo"
+type ExpressaoCriarCanal struct {
+	Token    lexer.Token // O token "Canal"
+	TipoItem string      // O tipo dos itens, ex: "Inteiros" -> "int"
+}
+
+func (ec *ExpressaoCriarCanal) noExpressao()          {}
+func (ec *ExpressaoCriarCanal) noNo()                 {}
+func (ec *ExpressaoCriarCanal) TokenLiteral() string  { return ec.Token.Valor }
+
+// DeclaracaoEnviar representa enviar valor para canal: "Enviar 10 para via."
+type DeclaracaoEnviar struct {
+	Token lexer.Token // O token "Enviar"
+	Valor Expressao   // O valor enviado
+	Canal string      // Nome do canal
+}
+
+func (de *DeclaracaoEnviar) noDeclaracao()         {}
+func (de *DeclaracaoEnviar) noNo()                 {}
+func (de *DeclaracaoEnviar) TokenLiteral() string  { return de.Token.Valor }
+
+// ExpressaoReceber representa ler valor do canal: "Receber de via"
+type ExpressaoReceber struct {
+	Token lexer.Token // O token "Receber"
+	Canal string      // Nome do canal
+}
+
+func (er *ExpressaoReceber) noExpressao()          {}
+func (er *ExpressaoReceber) noNo()                 {}
+func (er *ExpressaoReceber) TokenLiteral() string  { return er.Token.Valor }
+
+// -----------------------------------------------
+// V2: Biblioteca Padrão
+// -----------------------------------------------
+
+// DeclaracaoIncluir representa a importação de um pacote padrão: "Incluir Matematica."
+type DeclaracaoIncluir struct {
+	Token  lexer.Token // O token "Incluir"
+	Pacote string      // Nome do pacote a incluir
+}
+
+func (di *DeclaracaoIncluir) noDeclaracao()         {}
+func (di *DeclaracaoIncluir) noNo()                 {}
+func (di *DeclaracaoIncluir) TokenLiteral() string  { return di.Token.Valor }

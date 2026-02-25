@@ -273,3 +273,122 @@ func TestTokenizarLinhaColuna(t *testing.T) {
 		}
 	}
 }
+
+// -----------------------------------------------
+// Testes V2
+// -----------------------------------------------
+
+func TestTokenizarEntidade(t *testing.T) {
+	entrada := `A Entidade Usuario contendo (nome: Texto, idade: Inteiro).`
+	lex := Novo(entrada)
+	tokens, err := lex.Tokenizar()
+	if err != nil {
+		t.Fatalf("erro inesperado: %v", err)
+	}
+
+	esperado := []TokenType{
+		TOKEN_ARTIGO_DEFINIDO, TOKEN_ENTIDADE, TOKEN_IDENTIFICADOR,
+		TOKEN_CONTENDO, TOKEN_PARENTESE_ABRE,
+		TOKEN_IDENTIFICADOR, TOKEN_DOIS_PONTOS, TOKEN_TIPO, TOKEN_VIRGULA,
+		TOKEN_IDENTIFICADOR, TOKEN_DOIS_PONTOS, TOKEN_TIPO,
+		TOKEN_PARENTESE_FECHA, TOKEN_PONTO, TOKEN_FIM,
+	}
+
+	if len(tokens) != len(esperado) {
+		t.Fatalf("esperava %d tokens, obteve %d:\n%v", len(esperado), len(tokens), tokens)
+	}
+
+	for i, tipo := range esperado {
+		if tokens[i].Tipo != tipo {
+			t.Errorf("token[%d]: esperava %s, obteve %s (valor: %q)",
+				i, tipo.NomeLegivel(), tokens[i].Tipo.NomeLegivel(), tokens[i].Valor)
+		}
+	}
+}
+
+func TestTokenizarSimultaneamente(t *testing.T) {
+	entrada := `Simultaneamente:`
+	lex := Novo(entrada)
+	tokens, err := lex.Tokenizar()
+	if err != nil {
+		t.Fatalf("erro inesperado: %v", err)
+	}
+
+	if tokens[0].Tipo != TOKEN_SIMULTANEAMENTE {
+		t.Errorf("esperava SIMULTANEAMENTE, obteve %s", tokens[0].Tipo.NomeLegivel())
+	}
+	if tokens[1].Tipo != TOKEN_DOIS_PONTOS {
+		t.Errorf("esperava DOIS_PONTOS, obteve %s", tokens[1].Tipo.NomeLegivel())
+	}
+}
+
+func TestTokenizarTenteCapture(t *testing.T) {
+	entrada := `Tente:
+    Sinalize com ("erro").
+Capture erro:`
+	lex := Novo(entrada)
+	tokens, err := lex.Tokenizar()
+	if err != nil {
+		t.Fatalf("erro inesperado: %v", err)
+	}
+
+	tiposEsperados := []TokenType{
+		TOKEN_TENTE, TOKEN_DOIS_PONTOS,
+		TOKEN_SINALIZE, TOKEN_COM, TOKEN_PARENTESE_ABRE, TOKEN_TEXTO, TOKEN_PARENTESE_FECHA, TOKEN_PONTO,
+		TOKEN_CAPTURE, TOKEN_IDENTIFICADOR, TOKEN_DOIS_PONTOS,
+		TOKEN_FIM,
+	}
+
+	if len(tokens) != len(tiposEsperados) {
+		t.Fatalf("esperava %d tokens, obteve %d:\n%v", len(tiposEsperados), len(tokens), tokens)
+	}
+
+	for i, tipo := range tiposEsperados {
+		if tokens[i].Tipo != tipo {
+			t.Errorf("token[%d]: esperava %s, obteve %s (valor: %q)",
+				i, tipo.NomeLegivel(), tokens[i].Tipo.NomeLegivel(), tokens[i].Valor)
+		}
+	}
+}
+
+func TestTokenizarLista(t *testing.T) {
+	entrada := `["maçã", "banana", "uva"]`
+	lex := Novo(entrada)
+	tokens, err := lex.Tokenizar()
+	if err != nil {
+		t.Fatalf("erro inesperado: %v", err)
+	}
+
+	tiposEsperados := []TokenType{
+		TOKEN_COLCHETE_ABRE,
+		TOKEN_TEXTO, TOKEN_VIRGULA,
+		TOKEN_TEXTO, TOKEN_VIRGULA,
+		TOKEN_TEXTO,
+		TOKEN_COLCHETE_FECHA,
+		TOKEN_FIM,
+	}
+
+	if len(tokens) != len(tiposEsperados) {
+		t.Fatalf("esperava %d tokens, obteve %d:\n%v", len(tiposEsperados), len(tokens), tokens)
+	}
+
+	for i, tipo := range tiposEsperados {
+		if tokens[i].Tipo != tipo {
+			t.Errorf("token[%d]: esperava %s, obteve %s (valor: %q)",
+				i, tipo.NomeLegivel(), tokens[i].Tipo.NomeLegivel(), tokens[i].Valor)
+		}
+	}
+}
+
+func TestTokenizarSinalize(t *testing.T) {
+	entrada := `Sinalize com ("algo deu errado!").`
+	lex := Novo(entrada)
+	tokens, err := lex.Tokenizar()
+	if err != nil {
+		t.Fatalf("erro inesperado: %v", err)
+	}
+
+	if tokens[0].Tipo != TOKEN_SINALIZE {
+		t.Errorf("esperava SINALIZE, obteve %s", tokens[0].Tipo.NomeLegivel())
+	}
+}

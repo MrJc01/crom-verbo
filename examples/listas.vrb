@@ -1,0 +1,10 @@
+// Listas em Verbo
+// Demonstra criação, acesso por índice e iteração de listas.
+
+Uma frutas é ["maçã", "banana", "uva", "manga"].
+
+Exibir com ("Lista de frutas:").
+Exibir com (frutas[0]).
+Exibir com (frutas[1]).
+Exibir com (frutas[2]).
+Exibir com (frutas[3]).
