@@ -80,7 +80,7 @@ if [ -z "$RELEASE_JSON" ] || echo "$RELEASE_JSON" | grep -q '"message"'; then
     BINARY_NAME="verbo-${PLATFORM}"
     [ "$OS" = "windows" ] && BINARY_NAME="${BINARY_NAME}.exe"
     
-    DOWNLOAD_URL="https://github.com/${REPO}/raw/main/downloads/${BINARY_NAME}"
+    DOWNLOAD_URL="https://github.com/${REPO}/raw/main/www/downloads/${BINARY_NAME}"
 else
     VERSION=$(echo "$RELEASE_JSON" | grep '"tag_name"' | head -1 | sed 's/.*"tag_name": *"\([^"]*\)".*/\1/')
     info "Versão: ${GREEN}${VERSION}${NC}"
@@ -93,7 +93,7 @@ else
     
     if [ -z "$DOWNLOAD_URL" ]; then
         warn "Binário não encontrado na release. Tentando downloads/..."
-        DOWNLOAD_URL="https://github.com/${REPO}/raw/main/downloads/${BINARY_NAME}"
+        DOWNLOAD_URL="https://github.com/${REPO}/raw/main/www/downloads/${BINARY_NAME}"
     fi
 fi
 

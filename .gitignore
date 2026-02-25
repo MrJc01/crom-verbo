@@ -24,8 +24,8 @@ fizz_verbo.go
 # Artefatos da API Web PHP
 www/api/verbo_*
 
-# Binários de distribuição (versionados via GitHub Releases)
-www/downloads/
+# Binários de distribuição — versionados no repo para install.sh
+# www/downloads/ NÃO ignorado (precisa estar no GitHub)
 
 # Script de debug (não versionar)
 www/testar_compilador.sh
