@@ -86,6 +86,8 @@ func (t *Transpiler) Transpilar(programa *ast.Programa) (string, error) {
 				t.escreverLinha("\t\"github.com/juanxto/crom-verbo/pkg/stdlib/texto\"")
 			case "Arquivo":
 				t.escreverLinha("\t\"github.com/juanxto/crom-verbo/pkg/stdlib/arquivo\"")
+			case "Html":
+				t.escreverLinha("\t\"github.com/juanxto/crom-verbo/pkg/stdlib/html\"")
 			default:
 				// Fallback simplificado se não achar na BibVerbo: import direto
 				t.escreverLinha(fmt.Sprintf("\t%q", strings.ToLower(imp)))

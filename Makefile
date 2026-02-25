@@ -59,3 +59,15 @@ install: build
 	@echo "📦 Instalando $(BINARY_NAME)..."
 	cp $(BUILD_DIR)/$(BINARY_NAME) /usr/local/bin/$(BINARY_NAME)
 	@echo "✅ Instalado em /usr/local/bin/$(BINARY_NAME)"
+
+# Cross-compila binários para todas as plataformas
+release:
+	@echo "📦 Compilando binários para release..."
+	@mkdir -p www/downloads
+	GOOS=linux GOARCH=amd64 go build -o www/downloads/verbo-linux-amd64 ./$(CMD_DIR)
+	GOOS=linux GOARCH=arm64 go build -o www/downloads/verbo-linux-arm64 ./$(CMD_DIR)
+	GOOS=darwin GOARCH=amd64 go build -o www/downloads/verbo-darwin-amd64 ./$(CMD_DIR)
+	GOOS=darwin GOARCH=arm64 go build -o www/downloads/verbo-darwin-arm64 ./$(CMD_DIR)
+	GOOS=windows GOARCH=amd64 go build -o www/downloads/verbo-windows-amd64.exe ./$(CMD_DIR)
+	@echo "✅ Binários gerados em www/downloads/"
+	@ls -la www/downloads/

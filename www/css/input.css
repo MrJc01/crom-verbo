@@ -1,0 +1,202 @@
+@import "tailwindcss";
+
+/* ============================================
+   Verbo — Design System "Brasil-Tech"
+   Tailwind CSS v4
+   ============================================ */
+
+@theme {
+  /* Paleta Brasil-Tech */
+  --color-verde: #009739;
+  --color-verde-light: #00c04b;
+  --color-verde-neon: #00ff88;
+  --color-verde-dark: #006b28;
+  --color-amarelo: #FFDF00;
+  --color-amarelo-light: #ffe94d;
+  --color-amarelo-dark: #ccb200;
+  --color-azul: #012169;
+  --color-azul-light: #1a3a8a;
+  --color-azul-petroleo: #0a192f;
+  --color-azul-noite: #020c1b;
+  --color-branco-gelo: #f0f4f8;
+  --color-cinza-100: #e2e8f0;
+  --color-cinza-200: #cbd5e1;
+  --color-cinza-300: #94a3b8;
+  --color-cinza-700: #334155;
+  --color-cinza-800: #1e293b;
+  --color-cinza-900: #0f172a;
+
+  /* Fontes */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+
+  /* Animações */
+  --animate-fade-in: fade-in 0.6s ease-out;
+  --animate-slide-up: slide-up 0.6s ease-out;
+  --animate-glow: glow 2s ease-in-out infinite alternate;
+  --animate-typewriter: typewriter 3s steps(40) 1s forwards;
+  --animate-blink: blink 0.75s step-end infinite;
+  --animate-float: float 6s ease-in-out infinite;
+}
+
+/* Keyframes */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes glow {
+  from { box-shadow: 0 0 10px rgba(0, 255, 136, 0.2); }
+  to { box-shadow: 0 0 25px rgba(0, 255, 136, 0.5); }
+}
+
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blink {
+  50% { border-color: transparent; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ============================================
+   Utilidades customizadas
+   ============================================ */
+
+/* Glassmorphism */
+.glass {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.dark .glass {
+  background: rgba(10, 25, 47, 0.6);
+  border-color: rgba(0, 255, 136, 0.1);
+}
+
+/* Gradient text */
+.text-gradient-brasil {
+  background: linear-gradient(135deg, var(--color-verde), var(--color-amarelo));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-neon {
+  background: linear-gradient(135deg, var(--color-verde-neon), var(--color-amarelo));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Botões */
+.btn-primary {
+  background: linear-gradient(135deg, var(--color-verde), var(--color-verde-dark));
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px rgba(0, 151, 57, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 151, 57, 0.45);
+}
+
+.btn-secondary {
+  border: 2px solid var(--color-amarelo);
+  color: var(--color-amarelo);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  background: transparent;
+}
+
+.btn-secondary:hover {
+  background: var(--color-amarelo);
+  color: var(--color-azul-noite);
+  transform: translateY(-2px);
+}
+
+/* Code blocks */
+.code-block {
+  background: var(--color-azul-noite);
+  border: 1px solid rgba(0, 255, 136, 0.15);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  overflow-x: auto;
+  position: relative;
+}
+
+.code-block .keyword { color: var(--color-verde-neon); }
+.code-block .type { color: var(--color-amarelo); }
+.code-block .string { color: #a8e6a3; }
+.code-block .comment { color: var(--color-cinza-300); font-style: italic; }
+.code-block .number { color: #ffd700; }
+.code-block .article { color: #64b5f6; }
+
+/* Cards */
+.card-feature {
+  border-radius: 1rem;
+  padding: 2rem;
+  transition: all 0.4s ease;
+}
+
+.card-feature:hover {
+  transform: translateY(-5px) scale(1.02);
+}
+
+.dark .card-feature:hover {
+  box-shadow: 0 8px 30px rgba(0, 255, 136, 0.15);
+}
+
+/* Scroll indicator */
+.scroll-indicator {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-verde), var(--color-amarelo));
+  z-index: 100;
+  transition: width 0.1s linear;
+}
+
+/* Dark mode body */
+.dark body {
+  background-color: var(--color-azul-petroleo);
+  color: var(--color-branco-gelo);
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Selection */
+::selection {
+  background: rgba(0, 151, 57, 0.3);
+  color: white;
+}

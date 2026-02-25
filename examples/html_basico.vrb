@@ -1,0 +1,11 @@
+// Gerando uma página HTML com Verbo
+Incluir Html.
+
+O titulo é CriarPagina de Html com ("Meu Portfólio", "<h1>Bem-vindo ao Verbo!</h1>").
+Exibir com (titulo).
+
+O botao é CriarElemento de Html com ("button", "Clique aqui").
+Exibir com (botao).
+
+O link é CriarLink de Html com ("https://github.com/juanxto/crom-verbo", "GitHub do Verbo").
+Exibir com (link).
