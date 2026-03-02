@@ -1,4 +1,90 @@
 # 📖 Especificação da Linguagem Verbo
+## Servidor Web
+
+### Execução rápida (estilo Flask)
+
+O CLI possui um comando dedicado para rodar um servidor web a partir de um arquivo `.vrb`:
+
+```bash
+verbo servir caminho/para/app.vrb --host 0.0.0.0 --porta 5000
+```
+
+O comando transpila o arquivo e executa o servidor, aplicando override de host e porta.
+
+### Convenção de arquivos estáticos
+
+- `/static/` é servido de `./site/static/`
+- `GET /` serve `./site/index.html` apenas quando não existe rota explícita para `"/"`
+
+## Gerenciador de Pacotes
+
+### Arquivos
+
+- `verbo.mod.json`: lista de pacotes instalados.
+- `verbo.lock.json`: lockfile com a resolução (fonte/ref/pasta).
+- `./pacotes/<nome>`: pasta de instalação do pacote.
+
+### Instalar pacotes
+
+Formatos aceitos:
+
+- `gh:user/repo[@ref]`
+- `path:./pasta_do_pacote`
+
+### installer.vrb
+
+Se um pacote contiver um arquivo `installer.vrb` na raiz, o CLI o executa após a instalação.
+
+O `installer.vrb` pode imprimir (stdout) um JSON com ações. Formato atual (MVP):
+
+```json
+{
+  "copiar": [
+    { "de": "static", "para": "site/static" }
+  ]
+}
+```
+
+- **`de`** é relativo à pasta do pacote.
+- **`para`** é relativo ao diretório atual do projeto.
+
+Ações suportadas:
+
+```json
+{
+  "dependencias": ["gh:org/lib@main", "path:./pacotes/meu_pacote"],
+  "criar_pasta": [
+    { "caminho": "site/static" }
+  ],
+  "remover": [
+    { "caminho": "site/static/arquivo_velho.css" }
+  ],
+  "patch": [
+    { "arquivo": "site/index.html", "procurar": "OLÁ", "trocar": "Olá", "limite": 1 }
+  ],
+  "allowlist": {
+    "executar_comando": ["go", "npm"]
+  },
+  "executar_comando": [
+    { "comando": "go", "args": ["fmt", "./..."], "cwd": "." }
+  ]
+}
+```
+
+Regras de segurança (atuais):
+
+- Todos os caminhos (`de`, `para`, `caminho`, `arquivo`, `cwd`) devem ser **relativos** (sem caminhos absolutos e sem `..`).
+- `executar_comando` só executa comandos explicitamente permitidos em `allowlist.executar_comando`.
+- `remover` bloqueia operações diretas em `pacotes/`, `verbo.mod.json` e `verbo.lock.json`.
+
+Dependências:
+
+- `dependencias` aceita a mesma especificação de instalação do CLI:
+  - `gh:user/repo[@ref]`
+  - `path:./pasta_do_pacote`
+- As dependências são instaladas **antes** das ações do pacote atual.
+- O instalador detecta ciclo por pasta durante a execução do `installer.vrb`.
+
 
 **Versão**: 0.1.0 (MVP)  
 **Status**: Em Desenvolvimento  

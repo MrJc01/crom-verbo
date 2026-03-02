@@ -78,6 +78,20 @@ const (
 	TOKEN_CAPTURE            // Capture (catch/recover)
 	TOKEN_SINALIZE           // Sinalize (panic)
 
+	// V3: Servidor Web
+	TOKEN_SERVIDOR           // Servidor
+	TOKEN_ENDERECO           // endereco / endereço
+	TOKEN_PORTA              // porta
+	TOKEN_LOCAL              // local (127.0.0.1)
+	TOKEN_EXTERNO            // externo (0.0.0.0)
+	TOKEN_ROTA               // rota
+	TOKEN_INICIAR            // iniciar
+	TOKEN_RODAR              // rodar (alias de iniciar)
+	TOKEN_GET                // GET
+	TOKEN_POST               // POST
+	TOKEN_PUT                // PUT
+	TOKEN_DELETE             // DELETE
+
 	// Operadores
 	TOKEN_MAIS               // + / soma / mais
 	TOKEN_MENOS              // - / subtrai / menos
@@ -168,6 +182,18 @@ func (tt TokenType) NomeLegivel() string {
 		TOKEN_TENTE:            "TENTE",
 		TOKEN_CAPTURE:          "CAPTURE",
 		TOKEN_SINALIZE:         "SINALIZE",
+		TOKEN_SERVIDOR:         "SERVIDOR",
+		TOKEN_ENDERECO:         "ENDERECO",
+		TOKEN_PORTA:            "PORTA",
+		TOKEN_LOCAL:            "LOCAL",
+		TOKEN_EXTERNO:          "EXTERNO",
+		TOKEN_ROTA:             "ROTA",
+		TOKEN_INICIAR:          "INICIAR",
+		TOKEN_RODAR:            "RODAR",
+		TOKEN_GET:              "GET",
+		TOKEN_POST:             "POST",
+		TOKEN_PUT:              "PUT",
+		TOKEN_DELETE:           "DELETE",
 		TOKEN_MAIS:             "MAIS",
 		TOKEN_MENOS:            "MENOS",
 		TOKEN_MULTIPLICAR:      "MULTIPLICAR",
@@ -311,6 +337,30 @@ var palavrasChave = map[string]TokenType{
 	"capture":           TOKEN_CAPTURE,
 	"Sinalize":          TOKEN_SINALIZE,
 	"sinalize":          TOKEN_SINALIZE,
+
+	// V3: Servidor Web
+	"Servidor":          TOKEN_SERVIDOR,
+	"servidor":          TOKEN_SERVIDOR,
+	"Endereço":          TOKEN_ENDERECO,
+	"endereço":          TOKEN_ENDERECO,
+	"Endereco":          TOKEN_ENDERECO,
+	"endereco":          TOKEN_ENDERECO,
+	"Porta":             TOKEN_PORTA,
+	"porta":             TOKEN_PORTA,
+	"Local":             TOKEN_LOCAL,
+	"local":             TOKEN_LOCAL,
+	"Externo":           TOKEN_EXTERNO,
+	"externo":           TOKEN_EXTERNO,
+	"Rota":              TOKEN_ROTA,
+	"rota":              TOKEN_ROTA,
+	"Iniciar":           TOKEN_INICIAR,
+	"iniciar":           TOKEN_INICIAR,
+	"Rodar":             TOKEN_RODAR,
+	"rodar":             TOKEN_RODAR,
+	"GET":               TOKEN_GET,
+	"POST":              TOKEN_POST,
+	"PUT":               TOKEN_PUT,
+	"DELETE":            TOKEN_DELETE,
 
 	// Operadores textuais (português)
 	"e":            TOKEN_MAIS,         // concatenação / adição contextual

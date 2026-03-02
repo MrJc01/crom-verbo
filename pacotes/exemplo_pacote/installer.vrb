@@ -1,0 +1,3 @@
+A acoes é "{\n  \"copiar\": [\n    {\n      \"de\": \"static\",\n      \"para\": \"site/static\"\n    }\n  ]\n}".
+
+Exibir com (acoes).

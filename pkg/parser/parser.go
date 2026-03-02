@@ -120,7 +120,7 @@ func (p *Parser) analisarDeclaracao() ast.Declaracao {
 		if p.espiar().Tipo == lexer.TOKEN_ENTIDADE {
 			return p.analisarDeclaracaoEntidade()
 		}
-		return p.analisarDeclaracaoVariavel()
+		return p.analisarDeclaracaoVariavelOuServidor()
 
 	case lexer.TOKEN_PARA:
 		return p.analisarDeclaracaoFuncao()
@@ -163,13 +163,196 @@ func (p *Parser) analisarDeclaracao() ast.Declaracao {
 		return nil
 
 	case lexer.TOKEN_IDENTIFICADOR:
-		return p.analisarDeclaracaoIdentificador()
+		return p.analisarDeclaracaoIdentificadorOuServidor()
+
+	case lexer.TOKEN_SERVIDOR:
+		return p.analisarDeclaracaoServidorPalavraChave()
 
 	default:
 		p.erro(fmt.Sprintf("declaração inesperada: %s (%q)", p.tokenAtual().Tipo.NomeLegivel(), p.tokenAtual().Valor))
 		p.avancar()
 		return nil
 	}
+}
+
+// analisarDeclaracaoVariavelOuServidor detecta a construção especial:
+// "Um servidor está Servidor com (local, 8080)."
+// Caso contrário, faz fallback para declaração de variável comum.
+func (p *Parser) analisarDeclaracaoVariavelOuServidor() ast.Declaracao {
+	// Lookahead conservador: artigo + IDENTIFICADOR + ESTÁ + SERVIDOR
+	if p.tokenAtual().Tipo != lexer.TOKEN_ARTIGO_DEFINIDO && p.tokenAtual().Tipo != lexer.TOKEN_ARTIGO_INDEFINIDO {
+		return p.analisarDeclaracaoVariavel()
+	}
+	artigo := p.tokenAtual()
+	if p.espiar().Tipo != lexer.TOKEN_IDENTIFICADOR {
+		return p.analisarDeclaracaoVariavel()
+	}
+	// precisamos do 3º token
+	if p.posicao+2 >= len(p.tokens) {
+		return p.analisarDeclaracaoVariavel()
+	}
+	terceiro := p.tokens[p.posicao+2]
+	quartoExiste := p.posicao+3 < len(p.tokens)
+	if !quartoExiste {
+		return p.analisarDeclaracaoVariavel()
+	}
+	quarto := p.tokens[p.posicao+3]
+	if terceiro.Tipo == lexer.TOKEN_ESTA && quarto.Tipo == lexer.TOKEN_SERVIDOR {
+		return p.analisarDeclaracaoServidorCriacao(artigo)
+	}
+	return p.analisarDeclaracaoVariavel()
+}
+
+func (p *Parser) analisarDeclaracaoServidorCriacao(artigo lexer.Token) ast.Declaracao {
+	_ = artigo
+	// Reaproveitar tokens já validados em analisarDeclaracaoVariavelOuServidor
+	p.avancar() // consome artigo
+	identTok, _ := p.esperarTipo(lexer.TOKEN_IDENTIFICADOR)
+	// precisa de "está"
+	p.esperarTipo(lexer.TOKEN_ESTA)
+	// precisa de "Servidor"
+	p.esperarTipo(lexer.TOKEN_SERVIDOR)
+	// "com" opcional
+	if p.tokenAtual().Tipo == lexer.TOKEN_COM {
+		p.avancar()
+	}
+
+	// Formatos aceitos:
+	// (local, 8080)
+	// (endereço: local, porta: 8080)
+	var endereco ast.Expressao
+	var porta ast.Expressao
+
+	if p.tokenAtual().Tipo == lexer.TOKEN_PARENTESE_ABRE {
+		p.avancar()
+		for p.tokenAtual().Tipo != lexer.TOKEN_PARENTESE_FECHA && !p.fimDoArquivo() {
+			if p.tokenAtual().Tipo == lexer.TOKEN_VIRGULA {
+				p.avancar()
+				continue
+			}
+
+			// opção nomeada
+			if p.tokenAtual().Tipo == lexer.TOKEN_ENDERECO {
+				p.avancar()
+				if p.tokenAtual().Tipo == lexer.TOKEN_DOIS_PONTOS {
+					p.avancar()
+				}
+				endereco = p.analisarExpressaoPrimaria()
+				continue
+			}
+			if p.tokenAtual().Tipo == lexer.TOKEN_PORTA {
+				p.avancar()
+				if p.tokenAtual().Tipo == lexer.TOKEN_DOIS_PONTOS {
+					p.avancar()
+				}
+				porta = p.analisarExpressaoPrimaria()
+				continue
+			}
+
+			// opção posicional
+			if endereco == nil {
+				endereco = p.analisarExpressaoPrimaria()
+				continue
+			}
+			if porta == nil {
+				porta = p.analisarExpressaoPrimaria()
+				continue
+			}
+			// se vier algo a mais, consumir como expressão e ignorar
+			_ = p.analisarExpressao()
+		}
+		p.esperarTipo(lexer.TOKEN_PARENTESE_FECHA)
+	}
+
+	// defaults
+	if endereco == nil {
+		endereco = &ast.ExpressaoIdentificador{Token: lexer.Token{Tipo: lexer.TOKEN_LOCAL, Valor: "local"}, Nome: "local"}
+	}
+	if porta == nil {
+		porta = &ast.ExpressaoLiteralNumero{Token: lexer.Token{Tipo: lexer.TOKEN_NUMERO, Valor: "8080"}, Valor: "8080"}
+	}
+
+	p.consumirPonto()
+	return &ast.DeclaracaoServidor{Token: identTok, Nome: identTok.Valor, Endereco: endereco, Porta: porta}
+}
+
+// analisarDeclaracaoServidorPalavraChave trata declarações iniciadas por "Servidor".
+// Suporta atalho: "Servidor rota ..." (usa instância padrão "servidor").
+func (p *Parser) analisarDeclaracaoServidorPalavraChave() ast.Declaracao {
+	tok := p.avancar() // consome "Servidor"
+	// rota
+	if p.tokenAtual().Tipo == lexer.TOKEN_ROTA {
+		return p.analisarDeclaracaoRota(tok, "servidor")
+	}
+	// "Servidor iniciar" não é suportado (precisa instância). Consumir ponto se houver.
+	p.consumirPonto()
+	return nil
+}
+
+func (p *Parser) analisarDeclaracaoRota(tokServidor lexer.Token, nomeServidor string) ast.Declaracao {
+	p.avancar() // consome "rota"
+
+	// Método
+	metTok := p.tokenAtual()
+	switch metTok.Tipo {
+	case lexer.TOKEN_GET, lexer.TOKEN_POST, lexer.TOKEN_PUT, lexer.TOKEN_DELETE:
+		p.avancar()
+	default:
+		p.erro("esperava método HTTP (GET/POST/PUT/DELETE) após 'rota'")
+		p.avancar()
+		return nil
+	}
+
+	// "em" opcional
+	if p.tokenAtual().Tipo == lexer.TOKEN_EM {
+		p.avancar()
+	}
+
+	// Caminho como TEXTO
+	if p.tokenAtual().Tipo != lexer.TOKEN_TEXTO {
+		p.erroEsperado(lexer.TOKEN_TEXTO)
+		p.avancar()
+		return nil
+	}
+	pathTok := p.avancar()
+	path := pathTok.Valor
+
+	// remover aspas se for literal "..."
+	path = strings.Trim(path, "\"")
+
+	p.esperarTipo(lexer.TOKEN_DOIS_PONTOS)
+	corpo := p.analisarBloco()
+
+	return &ast.DeclaracaoRota{
+		Token:    tokServidor,
+		Servidor: nomeServidor,
+		Metodo:   metTok.Valor,
+		Caminho:  path,
+		Corpo:    corpo,
+	}
+}
+
+func (p *Parser) analisarDeclaracaoIdentificadorOuServidor() ast.Declaracao {
+	// se for "<ident> iniciar.", tratar como iniciar servidor.
+	if p.posicao+1 < len(p.tokens) && (p.tokens[p.posicao+1].Tipo == lexer.TOKEN_INICIAR || p.tokens[p.posicao+1].Tipo == lexer.TOKEN_RODAR) {
+		ident := p.avancar()
+		p.avancar() // iniciar/rodar
+		p.consumirPonto()
+		return &ast.DeclaracaoIniciarServidor{Token: ident, Servidor: ident.Valor}
+	}
+
+	// se for "<ident> rota ...", tratar como rota vinculada a instância.
+	if p.posicao+1 < len(p.tokens) && p.tokens[p.posicao+1].Tipo == lexer.TOKEN_ROTA {
+		ident := p.avancar() // nome do servidor
+		if !strings.EqualFold(ident.Valor, "servidor") {
+			p.erro("rota deve ser declarada pela instância 'servidor' (use: servidor rota ... ou Servidor rota ...)")
+			// consumir "rota" e abortar para evitar loop
+			p.avancar()
+			return nil
+		}
+		return p.analisarDeclaracaoRota(ident, "servidor")
+	}
+	return p.analisarDeclaracaoIdentificador()
 }
 
 // analisarDeclaracaoVariavel analisa: "A/O/Um/Uma nome é/está valor."
@@ -873,7 +1056,7 @@ func (p *Parser) analisarExpressaoPrimaria() ast.Expressao {
 	case lexer.TOKEN_NOVO:
 		return p.analisarExpressaoInstanciacao()
 
-	case lexer.TOKEN_IDENTIFICADOR, lexer.TOKEN_TIPO:
+	case lexer.TOKEN_IDENTIFICADOR, lexer.TOKEN_TIPO, lexer.TOKEN_LOCAL, lexer.TOKEN_EXTERNO:
 		p.avancar()
 		// V2: Acesso por campo: "campo de objeto"
 		if p.tokenAtual().Tipo == lexer.TOKEN_DE {
