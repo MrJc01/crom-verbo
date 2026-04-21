@@ -20,6 +20,9 @@ type Transpiler struct {
 	usaSync     bool                      // V2: precisa importar "sync"
 	imports     map[string]bool           // V2: pacotes a importar (ex: Matematica)
 	erros       []string                  // V2: erros de compilação
+	usaWeb      bool                      // V3: precisa importar net/http
+	servidores  map[string]bool           // V3: servidores declarados
+	rotasWeb    map[string]map[string]bool // V3: rotas registradas por servidor (path->bool)
 }
 
 // Novo cria um novo Transpiler.
@@ -29,6 +32,8 @@ func Novo() *Transpiler {
 		imutaveis: make(map[string]bool),
 		entidades: make(map[string][]ast.CampoEntidade),
 		imports:   make(map[string]bool),
+		servidores: make(map[string]bool),
+		rotasWeb:   make(map[string]map[string]bool),
 	}
 }
 
@@ -57,7 +62,7 @@ func (t *Transpiler) Transpilar(programa *ast.Programa) (string, error) {
 		}
 	}
 
-	// Primeira passada: detectar se precisa de "sync", pacotes importados e registrar entidades
+	// Primeira passada: detectar se precisa de "sync", pacotes importados, web server e registrar entidades
 	for _, decl := range programa.Declaracoes {
 		checarSync(decl)
 		if ent, ok := decl.(*ast.DeclaracaoEntidade); ok {
@@ -66,15 +71,23 @@ func (t *Transpiler) Transpilar(programa *ast.Programa) (string, error) {
 		if inc, ok := decl.(*ast.DeclaracaoIncluir); ok {
 			t.imports[inc.Pacote] = true
 		}
+		switch decl.(type) {
+		case *ast.DeclaracaoServidor, *ast.DeclaracaoRota, *ast.DeclaracaoIniciarServidor:
+			t.usaWeb = true
+		}
 	}
 
 	// Cabeçalho Go
 	t.escreverLinha("package main")
 	t.escreverLinha("")
 	
-	if len(t.imports) > 0 || t.usaSync {
+	if len(t.imports) > 0 || t.usaSync || t.usaWeb {
 		t.escreverLinha("import (")
 		t.escreverLinha("\t\"fmt\"")
+		if t.usaWeb {
+			t.escreverLinha("\t\"net/http\"")
+			t.escreverLinha("\t\"os\"")
+		}
 		if t.usaSync {
 			t.escreverLinha("\t\"sync\"")
 		}
@@ -182,6 +195,183 @@ func (t *Transpiler) transpilarDeclaracao(decl ast.Declaracao) {
 		t.transpilarDeclaracaoEnviar(d)
 	case *ast.DeclaracaoIncluir:
 		// Não gera código aqui, pois os imports foram feitos no topo
+	// V3
+	case *ast.DeclaracaoServidor:
+		t.transpilarDeclaracaoServidor(d)
+	case *ast.DeclaracaoRota:
+		t.transpilarDeclaracaoRota(d)
+	case *ast.DeclaracaoIniciarServidor:
+		t.transpilarDeclaracaoIniciarServidor(d)
+	}
+}
+
+// -----------------------------------------------
+// V3: Servidor Web
+// -----------------------------------------------
+
+func (t *Transpiler) transpilarDeclaracaoServidor(d *ast.DeclaracaoServidor) {
+	// Criar um *http.ServeMux e uma config simples (host/porta)
+	// mux: <nome>_mux
+	muxNome := fmt.Sprintf("%s_mux", d.Nome)
+	addrNome := fmt.Sprintf("%s_addr", d.Nome)
+	portNome := fmt.Sprintf("%s_porta", d.Nome)
+
+	// porta
+	porta := t.transpilarExpressao(d.Porta)
+	// endereço
+	end := t.transpilarExpressao(d.Endereco)
+	// mapear local/externo
+	end = t.mapearEnderecoServidor(end)
+
+	t.escreverIndentado(fmt.Sprintf("%s := http.NewServeMux()", muxNome))
+	t.saida.WriteString("\n")
+	// permitir override via env (usado por `verbo servir`)
+	t.escreverIndentado(fmt.Sprintf("%s := %s", portNome, porta))
+	t.saida.WriteString("\n")
+	t.escreverIndentado(fmt.Sprintf("if v := os.Getenv(%q); v != %q { %s = v }", "VERBO_PORTA", "", portNome))
+	t.saida.WriteString("\n")
+
+	t.escreverIndentado(fmt.Sprintf("if v := os.Getenv(%q); v != %q { %s = v }", "VERBO_HOST", "", end))
+	t.saida.WriteString("\n")
+	t.escreverIndentado(fmt.Sprintf("%s := fmt.Sprintf(\"%s:%%v\", %s)", addrNome, end, portNome))
+	t.saida.WriteString("\n")
+
+	// marcar servidor existente
+	t.servidores[d.Nome] = true
+	if _, ok := t.rotasWeb[d.Nome]; !ok {
+		t.rotasWeb[d.Nome] = make(map[string]bool)
+	}
+
+	// Flask-like: servir apenas arquivos estáticos em /static/
+	// (ex: /static/style.css => ./site/static/style.css)
+	t.escreverIndentado(fmt.Sprintf("%s.Handle(\"/static/\", http.StripPrefix(\"/static/\", http.FileServer(http.Dir(\"site/static\"))))", muxNome))
+	t.saida.WriteString("\n")
+
+}
+
+func (t *Transpiler) transpilarDeclaracaoRota(d *ast.DeclaracaoRota) {
+	// A implementação atual do parser fixa Servidor="servidor".
+	// Aqui: usar sempre o mux do servidor padrão.
+	servidor := d.Servidor
+	if servidor == "" {
+		servidor = "servidor"
+	}
+	muxNome := fmt.Sprintf("%s_mux", servidor)
+
+	metodo := strings.ToUpper(d.Metodo)
+	caminho := d.Caminho
+
+	// registrar rota
+	if _, ok := t.rotasWeb[servidor]; !ok {
+		t.rotasWeb[servidor] = make(map[string]bool)
+	}
+	t.rotasWeb[servidor][caminho] = true
+
+	// Gerar handler: mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) { ... })
+	// Com switch de método para GET/POST/PUT/DELETE.
+	t.escreverIndentado(fmt.Sprintf("%s.HandleFunc(%q, func(w http.ResponseWriter, r *http.Request) {", muxNome, caminho))
+	t.saida.WriteString("\n")
+	t.indentacao++
+
+	// checar método
+	t.escreverIndentado(fmt.Sprintf("if r.Method != %q {", metodo))
+	t.saida.WriteString("\n")
+	t.indentacao++
+	t.escreverIndentado("w.WriteHeader(http.StatusMethodNotAllowed)")
+	t.saida.WriteString("\n")
+	t.escreverIndentado("return")
+	t.saida.WriteString("\n")
+	t.indentacao--
+	t.escreverIndentado("}")
+	t.saida.WriteString("\n")
+
+	// body do handler
+	// MVP: reaproveitar transpiler normal, mas mapear Exibir -> fmt.Println (stdout).
+	// Para web, vamos também escrever no response: se houver Exibir, escrever no w.
+	// Implementação simples: para cada DeclaracaoExibir dentro do corpo, gerar w.Write([]byte(...))
+	if d.Corpo != nil {
+		for _, decl := range d.Corpo.Declaracoes {
+			if ex, ok := decl.(*ast.DeclaracaoExibir); ok {
+				valor := t.transpilarExpressao(ex.Valor)
+				t.escreverIndentado(fmt.Sprintf("fmt.Fprint(w, %s)", valor))
+				t.saida.WriteString("\n")
+				continue
+			}
+			// fallback: gerar declaração normal (pode imprimir no stdout)
+			t.transpilarDeclaracao(decl)
+		}
+	}
+
+	t.indentacao--
+	t.escreverIndentado("})")
+	t.saida.WriteString("\n")
+}
+
+func (t *Transpiler) transpilarDeclaracaoIniciarServidor(d *ast.DeclaracaoIniciarServidor) {
+	servidor := d.Servidor
+	if servidor == "" {
+		servidor = "servidor"
+	}
+	addrNome := fmt.Sprintf("%s_addr", servidor)
+	muxNome := fmt.Sprintf("%s_mux", servidor)
+
+	// Se não existir rota explícita para "/", registrar fallback para ./site/index.html.
+	// (Opção B: site estático puro no root)
+	if _, ok := t.rotasWeb[servidor]["/"]; !ok {
+		t.escreverIndentado(fmt.Sprintf("%s.HandleFunc(\"/\", func(w http.ResponseWriter, r *http.Request) {", muxNome))
+		t.saida.WriteString("\n")
+		t.indentacao++
+		t.escreverIndentado("if r.URL.Path != \"/\" {")
+		t.saida.WriteString("\n")
+		t.indentacao++
+		t.escreverIndentado("http.NotFound(w, r)")
+		t.saida.WriteString("\n")
+		t.escreverIndentado("return")
+		t.saida.WriteString("\n")
+		t.indentacao--
+		t.escreverIndentado("}")
+		t.saida.WriteString("\n")
+		t.escreverIndentado("if r.Method != http.MethodGet && r.Method != http.MethodHead {")
+		t.saida.WriteString("\n")
+		t.indentacao++
+		t.escreverIndentado("w.WriteHeader(http.StatusMethodNotAllowed)")
+		t.saida.WriteString("\n")
+		t.escreverIndentado("return")
+		t.saida.WriteString("\n")
+		t.indentacao--
+		t.escreverIndentado("}")
+		t.saida.WriteString("\n")
+		t.escreverIndentado("http.ServeFile(w, r, \"site/index.html\")")
+		t.saida.WriteString("\n")
+		t.indentacao--
+		t.escreverIndentado("})")
+		t.saida.WriteString("\n")
+	}
+
+	// http.ListenAndServe(addr, mux)
+	t.escreverIndentado(fmt.Sprintf("fmt.Println(%q, %s)", "🚀 Servidor ouvindo em", addrNome))
+	t.saida.WriteString("\n")
+	t.escreverIndentado(fmt.Sprintf("if err := http.ListenAndServe(%s, %s); err != nil {", addrNome, muxNome))
+	t.saida.WriteString("\n")
+	t.indentacao++
+	t.escreverIndentado("panic(err)")
+	t.saida.WriteString("\n")
+	t.indentacao--
+	t.escreverIndentado("}")
+	t.saida.WriteString("\n")
+}
+
+func (t *Transpiler) mapearEnderecoServidor(enderecoExpr string) string {
+	// enderecoExpr vem como algo como "local" ou "externo" ou uma string literal.
+	// Se for identificador, mapear para IP.
+	switch enderecoExpr {
+	case "local":
+		return "127.0.0.1"
+	case "externo":
+		return "0.0.0.0"
+	default:
+		// se for literal já está quoted; nesse caso, remover quotes para usar no fmt.Sprintf do addr
+		return strings.Trim(enderecoExpr, "\"")
 	}
 }
 

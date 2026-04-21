@@ -24,6 +24,10 @@ make verificar ARQUIVO=examples/ola_mundo.vrb
 
 # Rodar todos os testes
 make test
+
+# Rodar um servidor web (estilo Flask)
+make build
+./build/verbo servir examples/web_index.vrb --host 0.0.0.0 --porta 5000
 ```
 
 ## 📝 Exemplo
@@ -65,6 +69,40 @@ crom-verbo/
 - [Exemplos Comentados](docs/EXEMPLOS.md)
 - [Guia de Contribuição](docs/CONTRIBUINDO.md)
 - [Roadmap](docs/ROADMAP.md)
+
+## 🌐 Servidor Web (estilo Flask)
+
+O Verbo tem um modo prático para rodar aplicações web, inspirado no fluxo de desenvolvimento do Flask.
+
+```bash
+./build/verbo servir examples/web_index.vrb --host 127.0.0.1 --porta 8099
+```
+
+Esse comando transpila o `.vrb` e executa o servidor, permitindo override de host/porta via variáveis de ambiente internas.
+
+No código, você pode iniciar o servidor com `app iniciar.` ou usando o açúcar sintático `app rodar.`.
+
+## 📦 Pacotes (manifesto, lockfile e installer)
+
+- **Manifesto**: `verbo.mod.json`
+- **Lockfile**: `verbo.lock.json`
+- **Pasta de pacotes**: `./pacotes/<nome>`
+
+Instalação:
+
+```bash
+# GitHub (baixa zip do repositório)
+./build/verbo pacote instalar gh:user/repo@main
+
+# Local (copia uma pasta local)
+./build/verbo pacote instalar path:./meu_pacote
+
+./build/verbo pacote listar
+./build/verbo pacote info
+./build/verbo pacote remover meu_pacote
+```
+
+Se o pacote contiver um `installer.vrb`, ele é executado após a instalação e pode emitir um JSON com ações (ex: copiar arquivos).
 
 ## 🛠️ Requisitos
 

@@ -418,3 +418,46 @@ type DeclaracaoIncluir struct {
 func (di *DeclaracaoIncluir) noDeclaracao()         {}
 func (di *DeclaracaoIncluir) noNo()                 {}
 func (di *DeclaracaoIncluir) TokenLiteral() string  { return di.Token.Valor }
+
+// -----------------------------------------------
+// V3: Servidor Web
+// -----------------------------------------------
+
+// DeclaracaoServidor representa a criação do servidor:
+// "Um servidor está Servidor com (local, 8080)." ou
+// "Um servidor está Servidor com (endereço: local, porta: 8080)."
+type DeclaracaoServidor struct {
+	Token    lexer.Token // Token do identificador da variável (ex: "servidor")
+	Nome     string      // Nome da variável (ex: servidor)
+	Endereco Expressao   // local/external ou string
+	Porta    Expressao   // número
+}
+
+func (d *DeclaracaoServidor) noNo()            {}
+func (d *DeclaracaoServidor) noDeclaracao()     {}
+func (d *DeclaracaoServidor) TokenLiteral() string { return d.Token.Valor }
+
+// DeclaracaoRota representa:
+// "Servidor rota GET em \"/\": ..."
+type DeclaracaoRota struct {
+	Token    lexer.Token // Token "Servidor"
+	Servidor string      // Nome da variável do servidor (ex: servidor)
+	Metodo   string      // GET/POST/PUT/DELETE
+	Caminho  string      // "/", "/api"
+	Corpo    *Bloco      // handler
+}
+
+func (d *DeclaracaoRota) noNo()            {}
+func (d *DeclaracaoRota) noDeclaracao()     {}
+func (d *DeclaracaoRota) TokenLiteral() string { return d.Token.Valor }
+
+// DeclaracaoIniciarServidor representa:
+// "Servidor iniciar." ou "servidor iniciar."
+type DeclaracaoIniciarServidor struct {
+	Token    lexer.Token // Token do identificador/Servidor
+	Servidor string      // Nome da variável do servidor
+}
+
+func (d *DeclaracaoIniciarServidor) noNo()            {}
+func (d *DeclaracaoIniciarServidor) noDeclaracao()     {}
+func (d *DeclaracaoIniciarServidor) TokenLiteral() string { return d.Token.Valor }

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{.Title}}</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>{{.Title}}</h1>
+      <p>Esta página foi renderizada pelo <strong>Servidor Web do Verbo</strong>.</p>
+
+      <section class="card">
+        <h2>API</h2>
+        <p>
+          Teste:
+          <code>/api/saude</code>
+        </p>
+        <button id="btn">Chamar API</button>
+        <pre id="out" aria-live="polite"></pre>
+      </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
